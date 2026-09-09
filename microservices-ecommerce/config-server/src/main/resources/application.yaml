@@ -1,0 +1,13 @@
+server:
+  port: 8888
+
+spring:
+  application:
+    name: config-server
+  cloud:
+    config:
+      server:
+        git:
+          uri: file:///C:/Users/santi/Documents/UdemySpring/microservices-ecommerce/config-data
+          clone-on-start: true
+          default-label: main

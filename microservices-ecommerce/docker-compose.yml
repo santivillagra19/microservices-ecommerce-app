@@ -1,0 +1,96 @@
+services:
+  # 1. El Servicio de Base de Datos
+  mongodb:
+    image: mongo:7.0.4
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=password
+    volumes:
+      - mongo_data:/data/db
+
+  inventory-db:
+    image: mysql:8
+    container_name: inventory-db
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: inventory-db
+    volumes:
+      - inventory_data:/var/lib/mysql
+
+  order-db:
+    image: postgres:16-alpine
+    container_name: order-db
+    ports:
+      - "5434:5432"
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: order-db
+    volumes:
+      - order_data:/var/lib/postgresql/data
+
+  keycloak-db:
+    image: postgres:16-alpine
+    container_name: keycloak-db
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: keycloak-db
+    volumes:
+      - keycloak_data:/var/lib/postgresql/data
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:24.0.1
+    container_name: keycloak
+    command: start-dev
+    environment:
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://keycloak-db:5432/keycloak-db
+      KC_DB_USERNAME: keycloak
+      KC_DB_PASSWORD: password
+
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+    ports:
+      - "8080:8080"
+    depends_on:
+      - keycloak-db
+
+  rabbitmq:
+    image: rabbitmq:4.2-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+volumes:
+  mongo_data:
+  inventory_data:
+  order_data:
+  keycloak_data:
+  rabbitmq_data:
+
+
+#  # 2. Nuestra Aplicación (Product Service)
+#  product-service:
+#    build: .              # Usa el Dockerfile de la carpeta actual
+#    container_name: product-service
+#    ports:
+#      - "8080:8080" # "host:contenedor"
+#    environment:
+#      # Sobrescribimos la config de Spring para usar Docker
+#      # Fíjate: usamos 'mongodb' en lugar de 'localhost'
+#      - SPRING_DATA_MONGODB_URI=mongodb://root:password@mongodb:27017/product-db?authSource=admin
+#    depends_on:
+#      - mongodb           # Espera a que la BD arranque primero
