@@ -11,7 +11,11 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.ReactiveJwtAuthenticationConverterAdapter;
 import org.springframework.security.web.server.SecurityWebFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.reactive.CorsConfigurationSource;
+import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
@@ -21,21 +25,50 @@ import java.util.stream.Collectors;
 @EnableWebFluxSecurity
 public class SecurityConfig {
 
+    @org.springframework.beans.factory.annotation.Value("${cors.allowed-origins:*}")
+    private java.util.List<String> allowedOrigins;
+
+    @org.springframework.beans.factory.annotation.Value("${cors.allowed-methods:GET,POST,PUT,DELETE,OPTIONS,PATCH}")
+    private java.util.List<String> allowedMethods;
+
+    @org.springframework.beans.factory.annotation.Value("${cors.allowed-headers:Authorization,Content-Type}")
+    private java.util.List<String> allowedHeaders;
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOriginPatterns(allowedOrigins);
+        configuration.setAllowedMethods(allowedMethods);
+        configuration.setAllowedHeaders(allowedHeaders);
+        configuration.setAllowCredentials(true);
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+    }
+
     @Bean
     public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity serverHttpSecurity) {
-        serverHttpSecurity.csrf(ServerHttpSecurity.CsrfSpec::disable)
+        serverHttpSecurity
+                .cors(Customizer.withDefaults())
+                .csrf(ServerHttpSecurity.CsrfSpec::disable)
                 .authorizeExchange(authorizeExchangeSpec -> authorizeExchangeSpec
+                        .pathMatchers("/actuator/**").permitAll()
                         .pathMatchers("/eureka/**").permitAll()
-                        .pathMatchers(HttpMethod.GET,"/api/v1/product/**").permitAll()
-                        .pathMatchers(HttpMethod.GET,"/api/v1/inventory/**").permitAll()
+                        .pathMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html", "/docs/**").permitAll()
+                        .pathMatchers("/*/v3/api-docs").permitAll()
+                        .pathMatchers(HttpMethod.GET, "/api/v1/product/**", "/api/v1/product").permitAll()
+                        .pathMatchers(HttpMethod.GET, "/api/v1/inventory/**", "/api/v1/inventory").permitAll()
 
-                        .pathMatchers("/api/v1/product/**").hasRole(Role.ADMIN.name())
-                        .pathMatchers("/api/v1/inventory/**").hasRole(Role.ADMIN.name())
+                        .pathMatchers(HttpMethod.POST, "/api/v1/users/register").permitAll()
+                        .pathMatchers(HttpMethod.POST, "/api/v1/product/image").permitAll()
+                        .pathMatchers("/api/v1/payment/**", "/api/v1/payment").permitAll()
+                        .pathMatchers("/api/v1/product/**", "/api/v1/product").hasRole(Role.ADMIN.name())
+                        .pathMatchers("/api/v1/inventory/**", "/api/v1/inventory").hasRole(Role.ADMIN.name())
 
-                        .pathMatchers(HttpMethod.POST,"/api/v1/order/**").hasRole(Role.USER.name())
-                        .pathMatchers(HttpMethod.GET, "/api/v1/order/**").hasAnyRole(Role.ADMIN.name(), Role.USER.name())
-                        .pathMatchers(HttpMethod.PUT,"/api/v1/order/**").hasRole(Role.ADMIN.name())
-                        .pathMatchers(HttpMethod.DELETE,"/api/v1/order/**").hasRole(Role.ADMIN.name())
+                        .pathMatchers(HttpMethod.POST, "/api/v1/order/**", "/api/v1/order").hasAnyRole(Role.ADMIN.name(), Role.USER.name())
+                        .pathMatchers(HttpMethod.GET, "/api/v1/order/**", "/api/v1/order").hasAnyRole(Role.ADMIN.name(), Role.USER.name())
+                        .pathMatchers(HttpMethod.PUT, "/api/v1/order/**", "/api/v1/order").hasRole(Role.ADMIN.name())
+                        .pathMatchers(HttpMethod.DELETE, "/api/v1/order/**", "/api/v1/order").hasRole(Role.ADMIN.name())
 
                         .anyExchange().authenticated()
                 )

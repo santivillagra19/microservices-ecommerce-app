@@ -16,4 +16,5 @@ public class OrderResponseDTO {
     private String orderNumber;
     private OrderStatus orderStatus;
     private List<OrderLineItemsResponseDTO> orderLineItemsList;
+    private String paymentUrl;
 }

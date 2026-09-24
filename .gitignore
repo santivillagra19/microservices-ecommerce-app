@@ -31,3 +31,9 @@ dist-ssr/
 # System Files
 .DS_Store
 Thumbs.db
+
+# Agent and temporary files
+.agents/
+*_output.txt
+admin_token.txt
+

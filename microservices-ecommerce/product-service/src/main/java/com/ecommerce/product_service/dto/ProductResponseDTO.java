@@ -6,7 +6,10 @@ public record ProductResponseDTO (
     String id,
     String name,
     String description,
-    BigDecimal price
-) {
-
-}
+    BigDecimal price,
+    String category,
+    String brand,
+    String imageUrl,
+    java.util.List<String> imageUrls,
+    boolean inStock
+) {}

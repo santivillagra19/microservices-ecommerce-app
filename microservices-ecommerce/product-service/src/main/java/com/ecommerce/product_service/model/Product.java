@@ -20,4 +20,19 @@ public class Product {
     private String name;
     private String description;
     private BigDecimal price;
+    private String category;
+    private String brand;
+    private String imageUrl;
+    private java.util.List<String> imageUrls;
+
+    public java.util.List<String> getImageUrls() {
+        if (imageUrls != null && !imageUrls.isEmpty()) return imageUrls;
+        if (imageUrl != null) return java.util.List.of(imageUrl);
+        return java.util.List.of();
+    }
+
+    public String getImageUrl() {
+        if (imageUrls != null && !imageUrls.isEmpty()) return imageUrls.get(0);
+        return imageUrl;
+    }
 }

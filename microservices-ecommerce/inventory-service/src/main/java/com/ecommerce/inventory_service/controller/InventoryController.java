@@ -10,22 +10,28 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/inventory")
 @RequiredArgsConstructor
+@Tag(name = "Inventory", description = "Endpoints for managing product inventory")
 public class InventoryController {
 
     private final InventoryService inventoryService;
 
     @GetMapping("/{sku}")
     @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "Check stock by SKU", description = "Verifies if the specified product is currently in stock")
     public boolean isInStock(@PathVariable String sku, @RequestParam(value = "quantity", defaultValue = "1") Integer quantity) {
         return inventoryService.isInStock(sku, quantity);
     }
 
     @PostMapping
+    @Operation(summary = "Create inventory", description = "Adds a new inventory record for a product")
     public ResponseEntity<InventoryResponseDTO> createInventory(@Valid @RequestBody InventoryRequestDTO inventoryRequest) {
         InventoryResponseDTO response = inventoryService.createInventory(inventoryRequest);
         return new ResponseEntity<>(response, HttpStatus.CREATED);

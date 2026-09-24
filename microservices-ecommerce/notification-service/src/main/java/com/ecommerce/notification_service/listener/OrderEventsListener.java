@@ -23,15 +23,17 @@ public class OrderEventsListener {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom("pedidos@ecommerce.com");
         message.setTo(event.email());
-        message.setSubject("Orden confirmada - " + event.orderNumber());
-        message.setText("Tu pedido con número " + event.orderNumber() + " ha sido recibido correctamente \n" +
-                "Pronto recibirás más noticias sobre el envío. \n\n" +
-                "Gracias por comprar con nosotros!");
+        message.setSubject("¡Tu pedido " + event.orderNumber() + " ha sido confirmado!");
+        message.setText("Hola,\n\n" +
+                "¡Tenemos excelentes noticias! Tu pedido con número " + event.orderNumber() + " ha sido procesado exitosamente y ya lo estamos preparando.\n\n" +
+                "Pronto te enviaremos otra actualización en cuanto tu paquete esté en camino.\n\n" +
+                "¡Gracias por elegirnos!\n\n" +
+                "Saludos cordiales,\n" +
+                "El equipo de E-Commerce");
 
         mailSender.send(message);
 
         log.info("Correo enviado exitosamente para la orden: {}", event.orderNumber());
-
     }
 
     @RabbitListener(queues = "notification-cancelled-queue")
@@ -42,13 +44,18 @@ public class OrderEventsListener {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom("pedidos@ecommerce.com");
         message.setTo(event.email());
-        message.setSubject("Orden cancelada - " + event.orderNumber());
-        message.setText("Tu pedido con número " + event.orderNumber() + " ha sido cancelado correctamente");
+        message.setSubject("Aviso importante: Tu pedido " + event.orderNumber() + " ha sido cancelado");
+        message.setText("Hola,\n\n" +
+                "Lamentamos informarte que tu pedido con número " + event.orderNumber() + " ha tenido que ser cancelado.\n\n" +
+                "Motivo de la cancelación: " + event.reason() + "\n\n" +
+                "Si ya realizaste algún pago, no te preocupes, el reembolso será procesado en los próximos días hábiles.\n\n" +
+                "Si tienes alguna duda, por favor responde a este correo para que nuestro equipo de soporte te asista.\n\n" +
+                "Atentamente,\n" +
+                "El equipo de E-Commerce");
 
         mailSender.send(message);
 
         log.info("Correo enviado exitosamente para la orden: {}", event.orderNumber());
-
     }
 
 }

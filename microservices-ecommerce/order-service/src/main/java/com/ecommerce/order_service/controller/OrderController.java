@@ -25,7 +25,7 @@ public class OrderController {
     @ResponseStatus(HttpStatus.CREATED)
     public OrderResponseDTO placeOrder(@Valid @RequestBody OrderRequestDTO orderRequest,
                                                          @AuthenticationPrincipal Jwt jwt
-    ) {
+    ) throws com.fasterxml.jackson.core.JsonProcessingException {
         return orderService.placeOrder(orderRequest, jwt.getSubject());
     }
 

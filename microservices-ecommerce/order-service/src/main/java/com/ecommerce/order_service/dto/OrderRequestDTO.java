@@ -18,6 +18,7 @@ public class OrderRequestDTO {
     private List<OrderLineItemsRequestDTO> orderLineItemsList;
 
     @NotBlank(message = "El email es requerido")
-    @Email(message = "El formato del email no es válido")
+    @Email(message = "El formato del email no es vÃ¡lido")
     private String email;
+    private String paymentMethod;
 }

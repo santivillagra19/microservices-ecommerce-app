@@ -1,9 +1,12 @@
-export interface Product {
+﻿export interface Product {
   id: string;
-  sku: string;
   name: string;
   description: string;
   price: number;
+  imageUrl?: string;
+  imageUrls?: string[];
+  category?: string;
+  brand?: string;
 }
 
 export interface Order {
@@ -19,3 +22,15 @@ export interface Inventory {
   sku: string;
   quantity: number;
 }
+
+export interface User {
+  id: string;
+  username: string;
+  email: string;
+  firstName?: string;
+  lastName?: string;
+  roles: string[];
+}
+
+
+

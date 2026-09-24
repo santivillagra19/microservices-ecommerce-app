@@ -1,0 +1,60 @@
+spring:
+  config:
+    import: ""  # Override configserver import from application.yaml (saves ~35s timeout)
+  autoconfigure:
+    exclude:
+      - org.springframework.cloud.netflix.eureka.EurekaClientAutoConfiguration
+      - org.springframework.cloud.netflix.eureka.reactive.EurekaReactiveDiscoveryClientConfiguration
+  cloud:
+    config:
+      enabled: false
+    discovery:
+      enabled: false
+    gateway:
+      routes:
+        - id: product-service
+          uri: http://product-service:8081
+          predicates:
+            - Path=/api/v1/product/**, /api/v1/product
+        - id: order-service
+          uri: http://order-service:8082
+          predicates:
+            - Path=/api/v1/order/**, /api/v1/order
+        - id: inventory-service
+          uri: http://inventory-service:8083
+          predicates:
+            - Path=/api/v1/inventory/**, /api/v1/inventory
+        - id: payment-service
+          uri: http://payment-service:8085
+          predicates:
+            - Path=/api/v1/payment/**, /api/v1/payment
+
+  rabbitmq:
+    host: rabbitmq
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          # jwk-set-uri evita el OIDC discovery al startup (era issuer-uri, costaba ~30s)
+          # Spring Security fetchea el JWKS lazily en la primera validación de JWT
+          jwk-set-uri: http://keycloak:8080/realms/ecommerce-realm/protocol/openid-connect/certs
+
+eureka:
+  client:
+    enabled: false
+    fetch-registry: false
+    register-with-eureka: false
+
+# Deshabilitar swagger/openapi en k8s (no es necesario en producción)
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false
+
+keycloak:
+  admin:
+    username: ${KEYCLOAK_ADMIN_USER:admin}
+    password: ${KEYCLOAK_ADMIN_PASSWORD:admin}
+  url: ${KEYCLOAK_URL:http://keycloak:8080}
+  realm: ${KEYCLOAK_REALM:ecommerce-realm}

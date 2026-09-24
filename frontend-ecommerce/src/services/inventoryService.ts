@@ -1,22 +1,18 @@
 import { api } from './api';
 import type { Inventory } from '../types';
 
-const MOCK_INVENTORY: Inventory[] = [
-  { id: 'inv-1', sku: 'SKU-001', quantity: 15 },
-  { id: 'inv-2', sku: 'SKU-002', quantity: 42 },
-  { id: 'inv-3', sku: 'SKU-003', quantity: 0 },
-  { id: 'inv-4', sku: 'SKU-004', quantity: 5 },
-];
+
 
 export const inventoryService = {
   getAll: async (): Promise<Inventory[]> => {
-    return new Promise((resolve) => setTimeout(() => resolve(MOCK_INVENTORY), 600));
+    const response = await api.get('/inventory');
+    return response.data;
   },
   checkStock: async (skuCode: string): Promise<boolean> => {
-    return new Promise((resolve) => {
-      const item = MOCK_INVENTORY.find(i => i.sku === skuCode);
-      setTimeout(() => resolve(item ? item.quantity > 0 : false), 300);
-    });
+    const response = await api.get(`/inventory`, { params: { skuCode } });
+    // Assuming it returns an array of inventory items and we check if there's any with quantity > 0
+    const item = response.data.find((i: Inventory) => i.sku === skuCode);
+    return item ? item.quantity > 0 : false;
   },
   add: async (inventory: Omit<Inventory, 'id'>): Promise<Inventory> => {
     const response = await api.post('/inventory', inventory);

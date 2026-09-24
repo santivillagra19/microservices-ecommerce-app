@@ -1,9 +1,27 @@
-import { api } from './api';
+﻿import { api } from './api';
 import type { Order } from '../types';
 
+export interface OrderLineItemsRequest {
+  sku: string;
+  price: number;
+  quantity: number;
+}
+
+export interface OrderRequest {
+  orderLineItemsList: OrderLineItemsRequest[];
+  email: string;
+  paymentMethod: string;
+}
+
+export interface OrderResponse {
+  id: number;
+  orderNumber: string;
+  orderStatus: string;
+  paymentUrl?: string;
+}
+
 export const orderService = {
-  create: async (orderRequest: { skuCode: string; price: number; quantity: number }): Promise<string> => {
-    // According to context, returns a string (e.g. "Order Placed Successfully") or similar depending on the exact backend setup, but assuming a simple response.
+  create: async (orderRequest: OrderRequest): Promise<OrderResponse> => {
     const response = await api.post('/order', orderRequest);
     return response.data;
   },
@@ -12,10 +30,13 @@ export const orderService = {
     return response.data;
   },
   getById: async (id: string): Promise<Order> => {
-    const response = await api.get(`/order/${id}`);
+    const response = await api.get('/order/' + id);
     return response.data;
   },
   delete: async (id: string): Promise<void> => {
-    await api.delete(`/order/${id}`);
+    await api.delete('/order/' + id);
+  },
+  updateStatus: async (orderNumber: string, status: string): Promise<void> => {
+    await api.put('/order/' + orderNumber + '/status?status=' + status);
   }
 };

@@ -1,0 +1,51 @@
+spring:
+  application:
+    name: payment-service-test
+  config:
+    import: ""
+  cloud:
+    config:
+      enabled: false
+    discovery:
+      enabled: false
+  autoconfigure:
+    exclude:
+      - org.springframework.cloud.netflix.eureka.EurekaClientAutoConfiguration
+      - org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration
+
+  datasource:
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: ""
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: create-drop
+
+  jackson:
+    deserialization:
+      fail-on-unknown-properties: true
+
+mercadopago:
+  access-token: TEST-dummy-token
+  mock:
+    enabled: true
+
+eureka:
+  client:
+    enabled: false
+    register-with-eureka: false
+    fetch-registry: false
+
+management:
+  endpoint:
+    health:
+      show-details: always
+  health:
+    eureka:
+      enabled: false
+    rabbit:
+      enabled: false
+    discovery:
+      enabled: false

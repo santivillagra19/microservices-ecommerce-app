@@ -74,6 +74,15 @@ services:
       RABBITMQ_DEFAULT_PASS: guest
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
+  grafana-lgtm:
+    image: 'grafana/otel-lgtm:latest'
+    ports:
+      - '3000:3000'
+      - '4317:4317'
+      - '4318:4318'
+    environment:
+      - OTEL_METRIC_EXPORT_INTERVAL=5000
+
 volumes:
   mongo_data:
   inventory_data:
@@ -81,16 +90,3 @@ volumes:
   keycloak_data:
   rabbitmq_data:
 
-
-#  # 2. Nuestra Aplicación (Product Service)
-#  product-service:
-#    build: .              # Usa el Dockerfile de la carpeta actual
-#    container_name: product-service
-#    ports:
-#      - "8080:8080" # "host:contenedor"
-#    environment:
-#      # Sobrescribimos la config de Spring para usar Docker
-#      # Fíjate: usamos 'mongodb' en lugar de 'localhost'
-#      - SPRING_DATA_MONGODB_URI=mongodb://root:password@mongodb:27017/product-db?authSource=admin
-#    depends_on:
-#      - mongodb           # Espera a que la BD arranque primero

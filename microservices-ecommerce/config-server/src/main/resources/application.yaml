@@ -4,10 +4,10 @@ server:
 spring:
   application:
     name: config-server
+  profiles:
+    active: native
   cloud:
     config:
       server:
-        git:
-          uri: file:///C:/Users/santi/Documents/UdemySpring/microservices-ecommerce/config-data
-          clone-on-start: true
-          default-label: main
+        native:
+          search-locations: file:///C:/Users/santi/Documents/UdemySpring/microservices-ecommerce/config-data

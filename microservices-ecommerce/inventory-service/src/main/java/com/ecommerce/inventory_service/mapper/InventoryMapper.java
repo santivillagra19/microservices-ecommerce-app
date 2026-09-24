@@ -6,7 +6,9 @@ import com.ecommerce.inventory_service.model.Inventory;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-@Mapper(componentModel = "spring")
+import org.mapstruct.ReportingPolicy;
+
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface InventoryMapper {
     Inventory toModel(InventoryRequestDTO inventoryRequest);
 

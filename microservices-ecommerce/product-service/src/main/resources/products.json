@@ -1,0 +1,162 @@
+[
+  {
+    "name": "Taladro Percutor 20V",
+    "description": "Taladro inalámbrico con batería de litio, mandril de 1/2 pulgada y luz LED integrada.",
+    "price": 129.99,
+    "category": "Herramientas Eléctricas",
+    "brand": "DeWalt",
+    "imageUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/38/Dewalt_DCD985L2_Combi_Drill.jpg/500px-Dewalt_DCD985L2_Combi_Drill.jpg"
+  },
+  {
+    "name": "Sierra Circular 7-1/4\"",
+    "description": "Sierra circular potente de 1800W, ideal para cortes precisos en madera.",
+    "price": 159.5,
+    "category": "Herramientas Eléctricas",
+    "brand": "Makita",
+    "imageUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/00/Socket_wrench_and_sockets.JPG/500px-Socket_wrench_and_sockets.JPG"
+  },
+  {
+    "name": "Juego de Llaves de Tubo 108 piezas",
+    "description": "Maletín completo con llaves de tubo, crique y puntas en acero cromo vanadio.",
+    "price": 89.9,
+    "category": "Herramientas Manuales",
+    "brand": "Stanley",
+    "imageUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/bf/Socket_set.jpg/500px-Socket_set.jpg"
+  },
+  {
+    "name": "Martillo Galponero 16oz",
+    "description": "Martillo con mango de fibra de vidrio ergonómico, absorbe impactos.",
+    "price": 14.5,
+    "category": "Herramientas Manuales",
+    "brand": "Truper",
+    "imageUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/61/Estwing_hammer.JPG/500px-Estwing_hammer.JPG"
+  },
+  {
+    "name": "Amoladora Angular 4-1/2\"",
+    "description": "Amoladora de 850W, diseño compacto para corte y desbaste de metales.",
+    "price": 65.0,
+    "category": "Herramientas Eléctricas",
+    "brand": "Bosch",
+    "imageUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/db/AngleGrinder.jpg/500px-AngleGrinder.jpg"
+  },
+  {
+    "name": "Cinta Métrica 5m",
+    "description": "Flexómetro de 5 metros con recubrimiento de goma resistente a caídas.",
+    "price": 8.99,
+    "category": "Medición",
+    "brand": "Stanley",
+    "imageUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/67/Tape_measure.jpg/500px-Tape_measure.jpg"
+  },
+  {
+    "name": "Destornillador Inalámbrico 12V",
+    "description": "Atornillador ligero y manejable, incluye set de 10 puntas intercambiables.",
+    "price": 45.0,
+    "category": "Herramientas Eléctricas",
+    "brand": "Black+Decker",
+    "imageUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/ab/New_ixo_IMGP1649_smial_wp.jpg/500px-New_ixo_IMGP1649_smial_wp.jpg"
+  },
+  {
+    "name": "Juego de Destornilladores 6 piezas",
+    "description": "Set de destornilladores planos y phillips con punta magnética.",
+    "price": 18.5,
+    "category": "Herramientas Manuales",
+    "brand": "Bahco",
+    "imageUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/1c/Screw_Driver_display.jpg/500px-Screw_Driver_display.jpg"
+  },
+  {
+    "name": "Pinza Universal 8\"",
+    "description": "Pinza de electricista aislada hasta 1000V, acero al carbono.",
+    "price": 22.9,
+    "category": "Herramientas Manuales",
+    "brand": "Knipex",
+    "imageUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/1a/Klein_lineman%27s_pliers.jpg/500px-Klein_lineman%27s_pliers.jpg"
+  },
+  {
+    "name": "Nivel Láser de Líneas Cruzadas",
+    "description": "Nivel láser autonivelante con alcance de 15 metros. Ideal para interiores.",
+    "price": 115.0,
+    "category": "Medición",
+    "brand": "Bosch",
+    "imageUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/33/Kreuzlinienlaser_mit_Selbstnivellierung.jpg/500px-Kreuzlinienlaser_mit_Selbstnivellierung.jpg"
+  },
+  {
+    "name": "Sierra Caladora 600W",
+    "description": "Sierra de calar con acción pendular, perfecta para cortes curvos.",
+    "price": 55.0,
+    "category": "Herramientas Eléctricas",
+    "brand": "Skil",
+    "imageUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b8/Makita_4350FCT_Jigsaw.jpg/500px-Makita_4350FCT_Jigsaw.jpg"
+  },
+  {
+    "name": "Caja de Herramientas Metálica",
+    "description": "Caja organizadora reforzada con 3 gavetas y cerrojo para candado.",
+    "price": 38.0,
+    "category": "Almacenamiento",
+    "brand": "Truper",
+    "imageUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/71/Metal_tool_box.jpg/500px-Metal_tool_box.jpg"
+  },
+  {
+    "name": "Escalera de Aluminio 5 Peldaños",
+    "description": "Escalera plegable ligera, soporta hasta 150kg con patas antideslizantes.",
+    "price": 75.0,
+    "category": "Equipamiento",
+    "brand": "Cuprum",
+    "imageUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e0/Ladder.jpg/500px-Ladder.jpg"
+  },
+  {
+    "name": "Compresor de Aire 50 Litros",
+    "description": "Compresor de 2HP con tanque de 50L, ideal para herramientas neumáticas.",
+    "price": 189.99,
+    "category": "Neumáticas",
+    "brand": "Einhell",
+    "imageUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/0f/AirCompressorHusky.JPG/500px-AirCompressorHusky.JPG"
+  },
+  {
+    "name": "Juego Llaves Combinadas 12 pz",
+    "description": "Set de llaves combinadas (fija y estriada) de 8mm a 19mm.",
+    "price": 42.0,
+    "category": "Herramientas Manuales",
+    "brand": "Bahco",
+    "imageUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/05/2008-04-14_Chrome-Vanadium_Wrenches.jpg/500px-2008-04-14_Chrome-Vanadium_Wrenches.jpg"
+  },
+  {
+    "name": "Soldadora Inverter 130A",
+    "description": "Equipo de soldadura compacto, bajo consumo y fácil de transportar.",
+    "price": 110.0,
+    "category": "Soldadura",
+    "brand": "Lusqtoff",
+    "imageUrl": "https://upload.wikimedia.org/wikipedia/commons/8/8c/GYS_-_MMA_Arc_Welder_main.jpg"
+  },
+  {
+    "name": "Casco de Seguridad Industrial",
+    "description": "Casco amarillo con arnés de 4 puntos y banda antisudor.",
+    "price": 12.5,
+    "category": "Protección",
+    "brand": "3M",
+    "imageUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e8/Yellow_hard_hat.jpg/500px-Yellow_hard_hat.jpg"
+  },
+  {
+    "name": "Guantes de Trabajo de Cuero",
+    "description": "Guantes de descarne reforzados, ideales para trabajos pesados.",
+    "price": 6.99,
+    "category": "Protección",
+    "brand": "Delta Plus",
+    "imageUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/41/Worn_leather_work_gloves_20200225_100632.jpg/500px-Worn_leather_work_gloves_20200225_100632.jpg"
+  },
+  {
+    "name": "Lijadora Orbital 200W",
+    "description": "Lijadora de base rectangular con sistema de extracción de polvo.",
+    "price": 48.0,
+    "category": "Herramientas Eléctricas",
+    "brand": "Black+Decker",
+    "imageUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e0/Random_orbit_sander.jpg/500px-Random_orbit_sander.jpg"
+  },
+  {
+    "name": "Cúter Profesional 18mm",
+    "description": "Cúter de cuerpo metálico con bloqueo de rueda y 5 hojas de repuesto.",
+    "price": 5.5,
+    "category": "Herramientas Manuales",
+    "brand": "Stanley",
+    "imageUrl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b0/Generic_utility_knife_with_blade_extended.JPG/500px-Generic_utility_knife_with_blade_extended.JPG"
+  }
+]
