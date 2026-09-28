@@ -230,11 +230,11 @@ export const Navbar = () => {
             </div>
 
             {/* Botón Carrito */}
-            <Link to="/cart" className="relative p-2 text-gray-300 hover:bg-gray-800 hover:text-[#f26522] rounded-full transition-colors mr-0.5">
+            <Link to="/cart" className="relative p-2 text-gray-300 hover:text-[#f26522] hover:bg-white/10 rounded-full transition-colors mr-0.5">
               <ShoppingBag className="h-6 w-6" />
               {totalItems > 0 && (
-                <span className="absolute top-0 right-0 inline-flex items-center justify-center w-5 h-5 text-xs font-bold leading-none text-white transform translate-x-1/4 -translate-y-1/4 bg-[#f26522] rounded-full border-2 border-black">
-                  {totalItems}
+                <span className="absolute top-0 right-0 flex items-center justify-center min-w-[22px] h-[22px] px-1.5 text-[12px] font-black text-white bg-[#f26522] rounded-full border-2 border-black transform translate-x-1/3 -translate-y-1/4">
+                  {totalItems > 99 ? '99+' : totalItems}
                 </span>
               )}
             </Link>
