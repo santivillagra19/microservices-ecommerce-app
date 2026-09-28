@@ -1,5 +1,6 @@
+import { useEffect } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { Toaster } from 'sonner';
+import { Toaster, toast } from 'sonner';
 import { Layout } from './components/Layout';
 import { Home } from './pages/Home';
 import { Products } from './pages/Products';
@@ -15,6 +16,18 @@ import { Empresas } from './pages/Empresas';
 import { Orders } from './pages/Orders';
 
 function App() {
+  useEffect(() => {
+    const handleSessionExpired = () => {
+      toast.error('Tu sesión ha expirado', {
+        description: 'Por razones de seguridad, hemos cerrado tu sesión. Vuelve a ingresar para continuar.',
+        duration: 5000,
+      });
+    };
+
+    window.addEventListener('sessionExpired', handleSessionExpired);
+    return () => window.removeEventListener('sessionExpired', handleSessionExpired);
+  }, []);
+
   return (
     <BrowserRouter>
       <Toaster position="bottom-right" richColors theme="light" />
