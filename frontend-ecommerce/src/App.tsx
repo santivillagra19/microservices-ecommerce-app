@@ -11,6 +11,7 @@ import { AdminDashboard } from './pages/admin/AdminDashboard';
 import { Cart } from './pages/Cart';
 import { Checkout } from './pages/Checkout';
 import { CheckoutSuccess } from './pages/CheckoutSuccess';
+import { Empresas } from './pages/Empresas';
 
 function App() {
   return (
@@ -29,6 +30,7 @@ function App() {
           <Route path="checkout/pending" element={<CheckoutSuccess />} />
           <Route path="inventory" element={<InventoryPage />} />
           <Route path="contact" element={<Contact />} />
+          <Route path="empresas" element={<Empresas />} />
           <Route path="admin" element={<AdminDashboard />} />
         </Route>
       </Routes>
