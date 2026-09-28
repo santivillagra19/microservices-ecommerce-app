@@ -22,11 +22,20 @@ export const Products = () => {
   
   const searchQuery = searchParams.get('search') || '';
   const categoryQuery = searchParams.get('category') || '';
+  const brandQuery = searchParams.get('brand') || '';
 
   useEffect(() => {
     const fetchProducts = async () => {
+      setLoading(true);
       try {
-        const data = await productService.getAll();
+        const filters = {
+          ...(searchQuery && { search: searchQuery }),
+          ...(categoryQuery && { category: categoryQuery }),
+          ...(brandQuery && { brand: brandQuery }),
+          ...(minPrice && { minPrice }),
+          ...(maxPrice && { maxPrice })
+        };
+        const data = await productService.getAll(filters);
         setProducts(data);
       } catch (err) {
         setError('Error al cargar los productos. El servicio podría estar inactivo.');
@@ -34,13 +43,18 @@ export const Products = () => {
         setLoading(false);
       }
     };
-    fetchProducts();
-  }, []);
+    
+    const timeoutId = setTimeout(() => {
+      fetchProducts();
+    }, 300); // debounce para evitar multiples llamadas al tipear precios
+    
+    return () => clearTimeout(timeoutId);
+  }, [searchQuery, categoryQuery, brandQuery, minPrice, maxPrice]);
 
   // Al cambiar la categoría o buscar, subir el scroll automáticamente
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
-  }, [categoryQuery, searchQuery]);
+  }, [categoryQuery, searchQuery, brandQuery]);
 
   const handleBuy = (product: Product) => {
     addItem(product, 1);
@@ -57,41 +71,16 @@ export const Products = () => {
     setSearchParams(newParams);
   };
 
-  // Función auxiliar para deducir la categoría basándose en palabras clave
-  const getCategory = (product: Product): string => {
-    const text = (product.name + " " + product.description).toLowerCase();
-    const electricas = ['taladro', 'amoladora', 'sierra', 'lijadora', 'soldadora', 'eléctric', 'batería', 'inalámbric', 'motor', 'atornillador', 'compresor'];
-    const materiales = ['cemento', 'arena', 'clavo', 'tornillo', 'pintura', 'alambre', 'madera', 'ladrillo', 'pegamento', 'silicona', 'material', 'tubo', 'cable'];
-    const manuales = ['martillo', 'llave', 'destornillador', 'pinza', 'alicate', 'serrucho', 'cinta', 'nivel', 'manual', 'cutter', 'metro', 'espátula'];
-
-    if (electricas.some(w => text.includes(w))) return 'electricas';
-    if (materiales.some(w => text.includes(w))) return 'materiales';
-    if (manuales.some(w => text.includes(w))) return 'manuales';
-    
-    // Si no coincide con palabras específicas pero tiene "herramienta", la mandamos a manuales por defecto
-    if (text.includes('herramienta')) return 'manuales';
-    return 'otros';
+  const handleBrandChange = (val: string) => {
+    const newParams = new URLSearchParams(searchParams);
+    if (val) newParams.set('brand', val);
+    else newParams.delete('brand');
+    setSearchParams(newParams);
   };
 
-  // Filtrado de productos en el cliente
-  let filteredProducts = products.filter((product) => {
-    const term = searchQuery.toLowerCase();
-    const matchesSearch = product.name.toLowerCase().includes(term) || 
-                          product.description.toLowerCase().includes(term);
-                          
-    const cat = categoryQuery.toLowerCase();
-    // Comparamos la categoría deducida con la seleccionada
-    const matchesCategory = cat ? getCategory(product) === cat : true;
-
-    const price = product.price;
-    const matchesMinPrice = minPrice === '' || price >= Number(minPrice);
-    const matchesMaxPrice = maxPrice === '' || price <= Number(maxPrice);
-
-    return matchesSearch && matchesCategory && matchesMinPrice && matchesMaxPrice;
-  });
-
-  // Ordenamiento de productos
-  filteredProducts.sort((a, b) => {
+  // Ordenamiento de productos (este se mantiene en cliente por ser sencillo)
+  let sortedProducts = [...products];
+  sortedProducts.sort((a, b) => {
     if (sortBy === 'price-asc') return a.price - b.price;
     if (sortBy === 'price-desc') return b.price - a.price;
     if (sortBy === 'name-asc') return a.name.localeCompare(b.name);
@@ -143,9 +132,31 @@ export const Products = () => {
             onChange={handleCategoryChange}
             options={[
               { value: '', label: 'Todas las categorías' },
-              { value: 'manuales', label: 'Manuales' },
-              { value: 'electricas', label: 'Eléctricas' },
-              { value: 'materiales', label: 'Materiales' }
+              { value: 'Herramientas Eléctricas', label: 'Herramientas Eléctricas' },
+              { value: 'Herramientas Manuales', label: 'Herramientas Manuales' },
+              { value: 'Medición', label: 'Medición' },
+              { value: 'Almacenamiento', label: 'Almacenamiento' },
+              { value: 'Equipamiento', label: 'Equipamiento' },
+              { value: 'Neumáticas', label: 'Neumáticas' },
+              { value: 'Soldadura', label: 'Soldadura' },
+              { value: 'Protección', label: 'Protección' }
+            ]}
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-semibold text-gray-700 mb-2">Marca</label>
+          <Select 
+            value={brandQuery}
+            onChange={handleBrandChange}
+            options={[
+              { value: '', label: 'Todas las marcas' },
+              { value: 'DeWalt', label: 'DeWalt' },
+              { value: 'Makita', label: 'Makita' },
+              { value: 'Bosch', label: 'Bosch' },
+              { value: 'Stanley', label: 'Stanley' },
+              { value: 'Black+Decker', label: 'Black+Decker' },
+              { value: 'Truper', label: 'Truper' }
             ]}
           />
         </div>
@@ -188,7 +199,7 @@ export const Products = () => {
           />
         </div>
         
-        {(categoryQuery || minPrice || maxPrice || sortBy) && (
+        {(categoryQuery || brandQuery || minPrice || maxPrice || sortBy) && (
           <button
             onClick={() => {
               setSearchParams(new URLSearchParams());
@@ -209,14 +220,15 @@ export const Products = () => {
           <h2 className="text-2xl font-bold text-gray-900">
             {searchQuery ? `Resultados para "${searchQuery}"` : 
              categoryQuery ? `Categoría: ${categoryQuery.charAt(0).toUpperCase() + categoryQuery.slice(1)}` : 
+             brandQuery ? `Marca: ${brandQuery}` :
              'Nuestro Catálogo de Herramientas'}
           </h2>
-          {filteredProducts.length > 0 && (
-            <p className="text-gray-500 mt-1 text-sm">Mostrando {filteredProducts.length} productos</p>
+          {sortedProducts.length > 0 && (
+            <p className="text-gray-500 mt-1 text-sm">Mostrando {sortedProducts.length} productos</p>
           )}
         </div>
 
-        {filteredProducts.length === 0 ? (
+        {sortedProducts.length === 0 ? (
           <div className="text-center py-16 bg-white rounded-none border border-gray-100 flex flex-col items-center">
             <SearchX className="h-16 w-16 text-gray-300 mb-4" />
             <h3 className="text-lg font-bold text-gray-900 mb-2">No se encontraron productos</h3>
@@ -226,7 +238,7 @@ export const Products = () => {
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredProducts.map((product) => (
+            {sortedProducts.map((product) => (
               <ProductCard 
                 key={product.id} 
                 product={product} 

@@ -4,8 +4,8 @@ import type { Product } from '../types';
 
 
 export const productService = {
-  getAll: async (): Promise<Product[]> => {
-    const response = await api.get('/product');
+  getAll: async (filters?: { search?: string, category?: string, brand?: string, minPrice?: number | string, maxPrice?: number | string }): Promise<Product[]> => {
+    const response = await api.get('/product', { params: filters });
     return response.data;
   },
   getById: async (id: string): Promise<Product> => {
