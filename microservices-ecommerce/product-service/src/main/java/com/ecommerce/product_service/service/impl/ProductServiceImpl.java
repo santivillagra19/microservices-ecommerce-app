@@ -11,6 +11,9 @@ import com.ecommerce.product_service.service.ProductService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 
 import java.util.List;
 import java.util.Map;
@@ -22,10 +25,12 @@ public class ProductServiceImpl implements ProductService {
     private final ProductRepository repository;
     private final ProductMapper mapper;
     private final RestClient restClient;
+    private final MongoTemplate mongoTemplate;
 
-    public ProductServiceImpl(ProductRepository repository, ProductMapper mapper, RestClient.Builder restClientBuilder) {
+    public ProductServiceImpl(ProductRepository repository, ProductMapper mapper, RestClient.Builder restClientBuilder, MongoTemplate mongoTemplate) {
         this.repository = repository;
         this.mapper = mapper;
+        this.mongoTemplate = mongoTemplate;
         this.restClient = restClientBuilder.baseUrl("http://INVENTORY-SERVICE").build();
     }
 
@@ -38,7 +43,30 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List<ProductResponseDTO> getAllsProducts() {
+    public List<ProductResponseDTO> getProducts(String search, String category, String brand, java.math.BigDecimal minPrice, java.math.BigDecimal maxPrice) {
+        log.info("getProducts called with search={}, category={}, brand={}, minPrice={}, maxPrice={}", search, category, brand, minPrice, maxPrice);
+        Query query = new Query();
+        if (search != null && !search.isEmpty()) {
+            query.addCriteria(new Criteria().orOperator(
+                Criteria.where("name").regex(search, "i"),
+                Criteria.where("description").regex(search, "i")
+            ));
+        }
+        if (category != null && !category.isEmpty()) {
+            query.addCriteria(Criteria.where("category").regex("^" + category + "$", "i"));
+        }
+        if (brand != null && !brand.isEmpty()) {
+            query.addCriteria(Criteria.where("brand").regex("^" + brand + "$", "i"));
+        }
+        if (minPrice != null || maxPrice != null) {
+            Criteria priceCriteria = Criteria.where("price");
+            if (minPrice != null) priceCriteria.gte(minPrice);
+            if (maxPrice != null) priceCriteria.lte(maxPrice);
+            query.addCriteria(priceCriteria);
+        }
+
+        List<Product> products = mongoTemplate.find(query, Product.class);
+
         Map<String, Boolean> inventoryMap = Map.of();
         try {
             InventoryResponseDTO[] inventoryArray = restClient.get()
@@ -56,7 +84,7 @@ public class ProductServiceImpl implements ProductService {
 
         Map<String, Boolean> finalInventoryMap = inventoryMap;
 
-        return repository.findAll()
+        return products
                 .stream()
                 .map(product -> {
                     ProductResponseDTO dto = mapper.toProductResponseDTO(product);

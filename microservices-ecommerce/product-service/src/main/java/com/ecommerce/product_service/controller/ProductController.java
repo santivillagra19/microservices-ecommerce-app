@@ -32,9 +32,15 @@ public class ProductController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<ProductResponseDTO> getAllProducts(HttpServletResponse response) {
+    public List<ProductResponseDTO> getAllProducts(
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false) String category,
+            @RequestParam(required = false) String brand,
+            @RequestParam(required = false) java.math.BigDecimal minPrice,
+            @RequestParam(required = false) java.math.BigDecimal maxPrice,
+            HttpServletResponse response) {
         response.addHeader("X-Maintenance-Message", maintenanceMessage);
-        return productService.getAllsProducts();
+        return productService.getProducts(search, category, brand, minPrice, maxPrice);
     }
 
     @GetMapping("/{id}")
