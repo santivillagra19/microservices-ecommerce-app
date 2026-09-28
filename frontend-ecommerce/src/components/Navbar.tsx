@@ -1,7 +1,7 @@
 // Navbar.tsx
 import { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { ShoppingCart, Package, LogIn, LogOut, Tag, ChevronDown, PenTool, Wrench, Hammer, Search, ShoppingBag, X, Phone, Zap, Menu, Shield } from 'lucide-react';
+import { ShoppingCart, Package, LogIn, LogOut, Tag, ChevronDown, PenTool, Wrench, Hammer, Search, ShoppingBag, X, Phone, Zap, Menu, Shield, Ruler, Box, Settings } from 'lucide-react';
 import { authService } from '../services/authService';
 import { productService } from '../services/productService';
 import { Button } from './ui/Button';
@@ -116,11 +116,23 @@ export const Navbar = () => {
                     <Link to="/products?category=herramientas-manuales" className="flex items-center px-5 py-3 text-xs font-bold uppercase tracking-wider text-gray-400 hover:bg-white/5 hover:text-white transition-colors border-l-2 border-transparent hover:border-[#f26522]">
                       <Hammer className="h-4 w-4 mr-3 text-[#f26522]" /> Manuales
                     </Link>
+                    <Link to="/products?category=medicion" className="flex items-center px-5 py-3 text-xs font-bold uppercase tracking-wider text-gray-400 hover:bg-white/5 hover:text-white transition-colors border-l-2 border-transparent hover:border-[#f26522]">
+                      <Ruler className="h-4 w-4 mr-3 text-[#f26522]" /> Medición
+                    </Link>
+                    <Link to="/products?category=almacenamiento" className="flex items-center px-5 py-3 text-xs font-bold uppercase tracking-wider text-gray-400 hover:bg-white/5 hover:text-white transition-colors border-l-2 border-transparent hover:border-[#f26522]">
+                      <Box className="h-4 w-4 mr-3 text-[#f26522]" /> Almacenamiento
+                    </Link>
+                    <Link to="/products?category=equipamiento" className="flex items-center px-5 py-3 text-xs font-bold uppercase tracking-wider text-gray-400 hover:bg-white/5 hover:text-white transition-colors border-l-2 border-transparent hover:border-[#f26522]">
+                      <Wrench className="h-4 w-4 mr-3 text-[#f26522]" /> Equipamiento
+                    </Link>
+                    <Link to="/products?category=neumaticas" className="flex items-center px-5 py-3 text-xs font-bold uppercase tracking-wider text-gray-400 hover:bg-white/5 hover:text-white transition-colors border-l-2 border-transparent hover:border-[#f26522]">
+                      <Settings className="h-4 w-4 mr-3 text-[#f26522]" /> Neumáticas
+                    </Link>
                     <Link to="/products?category=soldadura" className="flex items-center px-5 py-3 text-xs font-bold uppercase tracking-wider text-gray-400 hover:bg-white/5 hover:text-white transition-colors border-l-2 border-transparent hover:border-[#f26522]">
                       <Zap className="h-4 w-4 mr-3 text-[#f26522]" /> Soldadura
                     </Link>
-                    <Link to="/products?category=almacenamiento" className="flex items-center px-5 py-3 text-xs font-bold uppercase tracking-wider text-gray-400 hover:bg-white/5 hover:text-white transition-colors border-l-2 border-transparent hover:border-[#f26522]">
-                      <Wrench className="h-4 w-4 mr-3 text-[#f26522]" /> Accesorios
+                    <Link to="/products?category=proteccion" className="flex items-center px-5 py-3 text-xs font-bold uppercase tracking-wider text-gray-400 hover:bg-white/5 hover:text-white transition-colors border-l-2 border-transparent hover:border-[#f26522]">
+                      <Shield className="h-4 w-4 mr-3 text-[#f26522]" /> Protección
                     </Link>
                   </div>
                 </div>
@@ -294,16 +306,40 @@ export const Navbar = () => {
                     <Hammer className="h-4 w-4 mr-2.5 text-[#f26522]" /> Manuales
                   </Link>
                   <Link
+                    to="/products?category=medicion"
+                    className="flex items-center px-3 py-2 text-xs font-bold uppercase tracking-wider text-gray-400 hover:text-white hover:bg-white/5 rounded transition-colors"
+                  >
+                    <Ruler className="h-4 w-4 mr-2.5 text-[#f26522]" /> Medición
+                  </Link>
+                  <Link
+                    to="/products?category=almacenamiento"
+                    className="flex items-center px-3 py-2 text-xs font-bold uppercase tracking-wider text-gray-400 hover:text-white hover:bg-white/5 rounded transition-colors"
+                  >
+                    <Box className="h-4 w-4 mr-2.5 text-[#f26522]" /> Almacenamiento
+                  </Link>
+                  <Link
+                    to="/products?category=equipamiento"
+                    className="flex items-center px-3 py-2 text-xs font-bold uppercase tracking-wider text-gray-400 hover:text-white hover:bg-white/5 rounded transition-colors"
+                  >
+                    <Wrench className="h-4 w-4 mr-2.5 text-[#f26522]" /> Equipamiento
+                  </Link>
+                  <Link
+                    to="/products?category=neumaticas"
+                    className="flex items-center px-3 py-2 text-xs font-bold uppercase tracking-wider text-gray-400 hover:text-white hover:bg-white/5 rounded transition-colors"
+                  >
+                    <Settings className="h-4 w-4 mr-2.5 text-[#f26522]" /> Neumáticas
+                  </Link>
+                  <Link
                     to="/products?category=soldadura"
                     className="flex items-center px-3 py-2 text-xs font-bold uppercase tracking-wider text-gray-400 hover:text-white hover:bg-white/5 rounded transition-colors"
                   >
                     <Zap className="h-4 w-4 mr-2.5 text-[#f26522]" /> Soldadura
                   </Link>
                   <Link
-                    to="/products?category=almacenamiento"
+                    to="/products?category=proteccion"
                     className="flex items-center px-3 py-2 text-xs font-bold uppercase tracking-wider text-gray-400 hover:text-white hover:bg-white/5 rounded transition-colors"
                   >
-                    <Wrench className="h-4 w-4 mr-2.5 text-[#f26522]" /> Accesorios
+                    <Shield className="h-4 w-4 mr-2.5 text-[#f26522]" /> Protección
                   </Link>
                 </div>
               )}
