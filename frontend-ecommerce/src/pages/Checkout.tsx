@@ -9,8 +9,8 @@ import { CreditCard, Landmark } from 'lucide-react';
 export const Checkout = () => {
   const { items, getTotalPrice, clearCart } = useCartStore();
   const navigate = useNavigate();
-  const [email, setEmail] = useState('');
   const [nombre, setNombre] = useState('');
+  const [email, setEmail] = useState('');
   const [telefono, setTelefono] = useState('');
   const [direccionEntrega, setDireccionEntrega] = useState('');
   const [paymentMethod, setPaymentMethod] = useState<'MERCADOPAGO' | 'TRANSFERENCIA'>('MERCADOPAGO');
@@ -33,9 +33,12 @@ export const Checkout = () => {
       }));
 
       const request = {
-        orderLineItemsList,
         email,
-        paymentMethod
+        nombre,
+        telefono,
+        direccionEntrega,
+        paymentMethod,
+        orderLineItemsList
       };
 
       const response = await orderService.create(request);
@@ -63,21 +66,21 @@ export const Checkout = () => {
         <form onSubmit={handleCheckout} className="flex-1 space-y-6">
           <div className="bg-white p-6 border border-gray-100 shadow-sm">
             <h2 className="text-xl font-bold text-gray-900 mb-4">Tus Datos</h2>
-                        <div className="space-y-4">
+            <div className="space-y-4">
               <div>
                 <label htmlFor="nombre" className="block text-sm font-medium text-gray-700">Nombre Completo</label>
-                <input type="text" id="nombre" required value={nombre} onChange={(e) => setNombre(e.target.value)} className="mt-1 block w-full rounded-none border-gray-300 border p-2 focus:border-[#f26522] focus:ring-[#f26522]" placeholder="Juan Pérez" />
+                <input type="text" id="nombre" required value={nombre} onChange={(e) => setNombre(e.target.value)} className="mt-1 block w-full rounded-none border-gray-300 border p-2 focus:border-[#f26522] focus:ring-[#f26522]" placeholder="Juan PÃ©rez" />
               </div>
               <div>
                 <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email</label>
                 <input type="email" id="email" required value={email} onChange={(e) => setEmail(e.target.value)} className="mt-1 block w-full rounded-none border-gray-300 border p-2 focus:border-[#f26522] focus:ring-[#f26522]" placeholder="tu@email.com" />
               </div>
               <div>
-                <label htmlFor="telefono" className="block text-sm font-medium text-gray-700">Teléfono</label>
+                <label htmlFor="telefono" className="block text-sm font-medium text-gray-700">TelÃ©fono</label>
                 <input type="tel" id="telefono" required value={telefono} onChange={(e) => setTelefono(e.target.value)} className="mt-1 block w-full rounded-none border-gray-300 border p-2 focus:border-[#f26522] focus:ring-[#f26522]" placeholder="+54 9 11 1234-5678" />
               </div>
               <div>
-                <label htmlFor="direccionEntrega" className="block text-sm font-medium text-gray-700">Dirección de Entrega</label>
+                <label htmlFor="direccionEntrega" className="block text-sm font-medium text-gray-700">DirecciÃ³n de Entrega</label>
                 <input type="text" id="direccionEntrega" required value={direccionEntrega} onChange={(e) => setDireccionEntrega(e.target.value)} className="mt-1 block w-full rounded-none border-gray-300 border p-2 focus:border-[#f26522] focus:ring-[#f26522]" placeholder="Calle Falsa 123, CABA" />
               </div>
             </div>
@@ -111,7 +114,7 @@ export const Checkout = () => {
                   onChange={() => setPaymentMethod('TRANSFERENCIA')}
                   className="h-4 w-4 text-[#f26522] focus:ring-[#f26522]" 
                 />
-                                <Landmark className="ml-3 w-6 h-6 text-gray-400" />
+                <Landmark className="ml-3 w-6 h-6 text-gray-400" />
                 <span className="ml-3 font-medium text-gray-900">Transferencia o Efectivo</span>
               </div>
             </label>
@@ -165,4 +168,3 @@ export const Checkout = () => {
     </div>
   );
 };
-
