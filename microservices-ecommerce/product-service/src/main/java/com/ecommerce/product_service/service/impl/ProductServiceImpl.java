@@ -61,7 +61,9 @@ public class ProductServiceImpl implements ProductService {
         if (search != null && !search.isEmpty()) {
             query.addCriteria(new Criteria().orOperator(
                 Criteria.where("name").regex(search, "i"),
-                Criteria.where("description").regex(search, "i")
+                Criteria.where("description").regex(search, "i"),
+                Criteria.where("brand").regex(search, "i"),
+                Criteria.where("category").regex(search, "i")
             ));
         }
         if (category != null && !category.isEmpty()) {
