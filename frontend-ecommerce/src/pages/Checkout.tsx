@@ -48,7 +48,7 @@ export const Checkout = () => {
         window.location.href = response.paymentUrl;
       } else {
         // Transferencia, redirect to success locally
-        clearCart();
+        // El carrito se limpia automáticamente en la pantalla de Success
         navigate(`/checkout/success?orderNumber=${response.orderNumber}&method=TRANSFERENCIA`);
       }
     } catch (error) {
