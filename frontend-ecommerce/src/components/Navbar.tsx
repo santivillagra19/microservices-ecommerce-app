@@ -75,14 +75,8 @@ export const Navbar = () => {
       ).slice(0, 5);
 
   return (
-    <>
-      {/* Top Bar Naranja */}
-      <div className="bg-[#f26522] text-white text-xs font-bold uppercase tracking-widest text-center py-2 px-4 flex items-center justify-center gap-2">
-        <span>🔥 ENVÍO GRATIS A TODO EL PAÍS EN COMPRAS SUPERIORES A $150.000</span>
-      </div>
-
-      <nav className="bg-black/75 backdrop-blur-md text-white border-b border-white/10 shadow-lg sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <nav className="bg-black/75 backdrop-blur-md text-white border-b border-white/10 shadow-lg sticky top-0 z-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16 gap-3 sm:gap-4">
           
           {/* Menú Izquierdo: Botón Hamburguesa en Mobile + Logo */}
@@ -416,8 +410,7 @@ export const Navbar = () => {
           </div>
         </div>
       )}
-      </nav>
-    </>
+    </nav>
   );
 };
 
