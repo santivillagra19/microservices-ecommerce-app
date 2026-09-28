@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: product-service
-          image: product-service:v20
+          image: product-service:v21
           imagePullPolicy: Never
           ports:
             - containerPort: 8081

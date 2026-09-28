@@ -21,7 +21,9 @@ public class Product {
     private String description;
     private BigDecimal price;
     private String category;
+    private String categorySlug;
     private String brand;
+    private String brandSlug;
     private String imageUrl;
     private java.util.List<String> imageUrls;
 

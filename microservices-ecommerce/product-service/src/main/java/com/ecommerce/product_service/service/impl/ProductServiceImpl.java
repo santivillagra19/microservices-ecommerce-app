@@ -34,9 +34,21 @@ public class ProductServiceImpl implements ProductService {
         this.restClient = restClientBuilder.baseUrl("http://INVENTORY-SERVICE").build();
     }
 
+    private void computeSlugs(Product product) {
+        if (product.getCategory() != null) {
+            product.setCategorySlug(product.getCategory().toLowerCase()
+                    .replace("á", "a").replace("é", "e").replace("í", "i")
+                    .replace("ó", "o").replace("ú", "u").replace(" ", "-"));
+        }
+        if (product.getBrand() != null) {
+            product.setBrandSlug(product.getBrand().toLowerCase().replace(" ", "-").replace("+", "-"));
+        }
+    }
+
     @Override
     public ProductResponseDTO createProduct(ProductRequestDTO requestDTO) {
         Product product = mapper.toProduct(requestDTO);
+        computeSlugs(product);
         Product savedProduct = repository.save(product);
         log.info("Product {} guardado", savedProduct.getName());
         return mapper.toProductResponseDTO(savedProduct);
@@ -53,10 +65,10 @@ public class ProductServiceImpl implements ProductService {
             ));
         }
         if (category != null && !category.isEmpty()) {
-            query.addCriteria(Criteria.where("category").regex("^" + category + "$", "i"));
+            query.addCriteria(Criteria.where("categorySlug").is(category.toLowerCase()));
         }
         if (brand != null && !brand.isEmpty()) {
-            query.addCriteria(Criteria.where("brand").regex("^" + brand + "$", "i"));
+            query.addCriteria(Criteria.where("brandSlug").is(brand.toLowerCase()));
         }
         if (minPrice != null || maxPrice != null) {
             Criteria priceCriteria = Criteria.where("price");
@@ -130,6 +142,7 @@ public class ProductServiceImpl implements ProductService {
         );
 
         mapper.updateProductFromRequest(productRequest, product);
+        computeSlugs(product);
         Product updatedProduct = repository.save(product);
         log.info("Product {} actualizado", updatedProduct.getName());
 
