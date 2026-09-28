@@ -1,7 +1,7 @@
 // Navbar.tsx
 import { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { ShoppingCart, Package, LogIn, LogOut, Tag, ChevronDown, PenTool, Wrench, Hammer, Search, ShoppingBag, X, Phone, Zap, Menu, Shield, Ruler, Box, Settings } from 'lucide-react';
+import { ShoppingCart, Package, LogIn, LogOut, Tag, ChevronDown, PenTool, Wrench, Hammer, Search, ShoppingBag, X, Phone, Zap, Menu, Shield, Ruler, Box, Settings, Briefcase } from 'lucide-react';
 import { authService } from '../services/authService';
 import { productService } from '../services/productService';
 import { Button } from './ui/Button';
@@ -138,8 +138,11 @@ export const Navbar = () => {
                 </div>
               </div>
 
-              <Link to="/offers" className="text-gray-300 hover:text-[#f26522] px-3 py-2 text-sm font-medium flex items-center gap-1 transition-colors">
-                <Tag className="h-4 w-4"/> Ofertas
+              <Link to="/empresas" className="text-gray-300 hover:text-[#f26522] px-3 py-2 text-sm font-medium flex items-center gap-1 transition-colors">
+                <Briefcase className="h-4 w-4"/> Venta a Empresas
+              </Link>
+              <Link to="/contact" className="text-gray-300 hover:text-[#f26522] px-3 py-2 text-sm font-medium flex items-center gap-1 transition-colors">
+                <Phone className="h-4 w-4"/> Contacto
               </Link>
             </div>
           </div>
@@ -345,17 +348,17 @@ export const Navbar = () => {
               )}
             </div>
 
-            {/* Enlace Ofertas */}
+            {/* Enlace Venta a Empresas */}
             <Link
-              to="/offers"
+              to="/empresas"
               className="flex items-center justify-between px-3 py-3 rounded-lg text-base font-semibold text-white bg-gray-900/70 border border-gray-800 hover:border-[#f26522]/50 hover:text-[#f26522] transition-colors"
             >
               <div className="flex items-center gap-3">
-                <Tag className="h-5 w-5 text-[#f26522]" />
-                <span>Ofertas</span>
+                <Briefcase className="h-5 w-5 text-[#f26522]" />
+                <span>Venta a Empresas</span>
               </div>
               <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-[#f26522]/20 text-[#f26522] border border-[#f26522]/40">
-                Descuentos
+                B2B
               </span>
             </Link>
 
