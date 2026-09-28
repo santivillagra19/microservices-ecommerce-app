@@ -179,7 +179,12 @@ export const Home = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full mt-16 space-y-20">
         
         {/* Categorías Section */}
-        <section>
+        <motion.section
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-50px" }}
+          transition={{ duration: 0.6 }}
+        >
           <div className="text-center mb-10">
             <h2 className="text-3xl font-black text-black uppercase tracking-tight">Categorías Principales</h2>
             <div className="w-24 h-1 bg-[#f26522] mx-auto mt-4"></div>
@@ -195,10 +200,17 @@ export const Home = () => {
               </Link>
             ))}
           </div>
-        </section>
+        </motion.section>
 
         {/* Featured Products Section */}
-        <section id="destacados" className="scroll-mt-24">
+        <motion.section 
+          id="destacados" 
+          className="scroll-mt-24"
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-50px" }}
+          transition={{ duration: 0.6 }}
+        >
           <div className="flex justify-between items-end mb-10 border-b-2 border-gray-100 pb-4">
             <div>
               <h2 className="text-3xl font-black text-black uppercase tracking-tight">Equipos Destacados</h2>
@@ -233,10 +245,16 @@ export const Home = () => {
               Ver todo el catálogo
             </Button>
           </div>
-        </section>
+        </motion.section>
 
         {/* Newsletter Section */}
-        <section className="bg-black text-white p-8 md:p-16 border-t-4 border-[#f26522] relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-8">
+        <motion.section 
+          className="bg-black text-white p-8 md:p-16 border-t-4 border-[#f26522] relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-8"
+          initial={{ opacity: 0, scale: 0.95 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true, margin: "-50px" }}
+          transition={{ duration: 0.6 }}
+        >
           <div className="relative z-10 text-center md:text-left max-w-xl">
             <h2 className="text-3xl font-black uppercase tracking-tight mb-2">Sé el primero en enterarte</h2>
             <p className="text-gray-400">Suscríbete a nuestro boletín para recibir novedades, lanzamientos y ofertas exclusivas para profesionales.</p>
@@ -251,7 +269,7 @@ export const Home = () => {
               Suscribirme
             </Button>
           </div>
-        </section>
+        </motion.section>
 
       </div>
     </motion.div>
