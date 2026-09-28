@@ -153,6 +153,28 @@ export const Home = () => {
         </div>
       </section>
 
+      {/* Brands Marquee */}
+      <section className="bg-white py-10 border-b-2 border-gray-100 overflow-hidden relative flex items-center">
+        {/* Gradients to fade edges */}
+        <div className="absolute left-0 top-0 bottom-0 w-16 sm:w-32 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none"></div>
+        <div className="absolute right-0 top-0 bottom-0 w-16 sm:w-32 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none"></div>
+        
+        <div className="flex w-max animate-marquee hover:[animation-play-state:paused]">
+          {[...Array(2)].map((_, i) => (
+            <div key={i} className="flex gap-16 sm:gap-24 items-center justify-center px-8 sm:px-12">
+              <span className="text-3xl sm:text-5xl font-black text-gray-300 uppercase tracking-tighter hover:text-[#f26522] transition-colors cursor-pointer">DeWalt</span>
+              <span className="text-3xl sm:text-5xl font-black text-gray-300 uppercase tracking-widest hover:text-blue-600 transition-colors cursor-pointer">Makita</span>
+              <span className="text-3xl sm:text-5xl font-black text-gray-300 uppercase tracking-tight hover:text-red-600 transition-colors cursor-pointer">Bosch</span>
+              <span className="text-3xl sm:text-5xl font-bold text-gray-300 uppercase tracking-normal hover:text-yellow-500 transition-colors cursor-pointer">Stanley</span>
+              <span className="text-3xl sm:text-5xl font-black text-gray-300 uppercase tracking-tighter hover:text-red-600 transition-colors cursor-pointer">Milwaukee</span>
+              <span className="text-3xl sm:text-5xl font-black text-gray-300 uppercase tracking-wide hover:text-orange-500 transition-colors cursor-pointer">Black+Decker</span>
+              <span className="text-3xl sm:text-5xl font-black text-gray-300 uppercase tracking-widest hover:text-red-500 transition-colors cursor-pointer">Hilti</span>
+              <span className="text-3xl sm:text-5xl font-black text-gray-300 uppercase tracking-tighter hover:text-orange-600 transition-colors cursor-pointer">Stihl</span>
+            </div>
+          ))}
+        </div>
+      </section>
+
       {/* Main Container para el resto del contenido */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full mt-16 space-y-20">
         

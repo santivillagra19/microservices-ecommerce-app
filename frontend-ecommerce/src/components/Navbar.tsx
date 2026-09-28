@@ -69,7 +69,10 @@ export const Navbar = () => {
   // Resultados del autocompletado (máximo 5)
   const autocompleteResults = searchQuery.trim() === '' 
     ? [] 
-    : products.filter(p => p.name.toLowerCase().includes(searchQuery.toLowerCase())).slice(0, 5);
+    : products.filter(p => 
+        p.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+        (p.brand && p.brand.toLowerCase().includes(searchQuery.toLowerCase()))
+      ).slice(0, 5);
 
   return (
     <nav className="bg-black text-white border-b border-gray-800 sticky top-0 z-50">
