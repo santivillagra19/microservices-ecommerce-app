@@ -1,4 +1,4 @@
-﻿import { api } from './api';
+import { api } from './api';
 import type { Order } from '../types';
 
 export interface OrderLineItemsRequest {
@@ -10,6 +10,9 @@ export interface OrderLineItemsRequest {
 export interface OrderRequest {
   orderLineItemsList: OrderLineItemsRequest[];
   email: string;
+  nombre?: string;
+  telefono?: string;
+  direccionEntrega?: string;
   paymentMethod: string;
 }
 
