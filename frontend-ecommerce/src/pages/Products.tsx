@@ -132,14 +132,14 @@ export const Products = () => {
             onChange={handleCategoryChange}
             options={[
               { value: '', label: 'Todas las categorías' },
-              { value: 'Herramientas Eléctricas', label: 'Herramientas Eléctricas' },
-              { value: 'Herramientas Manuales', label: 'Herramientas Manuales' },
-              { value: 'Medición', label: 'Medición' },
-              { value: 'Almacenamiento', label: 'Almacenamiento' },
-              { value: 'Equipamiento', label: 'Equipamiento' },
-              { value: 'Neumáticas', label: 'Neumáticas' },
-              { value: 'Soldadura', label: 'Soldadura' },
-              { value: 'Protección', label: 'Protección' }
+              { value: 'herramientas-electricas', label: 'Herramientas Eléctricas' },
+              { value: 'herramientas-manuales', label: 'Herramientas Manuales' },
+              { value: 'medicion', label: 'Medición' },
+              { value: 'almacenamiento', label: 'Almacenamiento' },
+              { value: 'equipamiento', label: 'Equipamiento' },
+              { value: 'neumaticas', label: 'Neumáticas' },
+              { value: 'soldadura', label: 'Soldadura' },
+              { value: 'proteccion', label: 'Protección' }
             ]}
           />
         </div>
@@ -151,12 +151,12 @@ export const Products = () => {
             onChange={handleBrandChange}
             options={[
               { value: '', label: 'Todas las marcas' },
-              { value: 'DeWalt', label: 'DeWalt' },
-              { value: 'Makita', label: 'Makita' },
-              { value: 'Bosch', label: 'Bosch' },
-              { value: 'Stanley', label: 'Stanley' },
-              { value: 'Black+Decker', label: 'Black+Decker' },
-              { value: 'Truper', label: 'Truper' }
+              { value: 'dewalt', label: 'DeWalt' },
+              { value: 'makita', label: 'Makita' },
+              { value: 'bosch', label: 'Bosch' },
+              { value: 'stanley', label: 'Stanley' },
+              { value: 'black-decker', label: 'Black+Decker' },
+              { value: 'truper', label: 'Truper' }
             ]}
           />
         </div>

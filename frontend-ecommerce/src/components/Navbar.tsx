@@ -110,16 +110,16 @@ export const Navbar = () => {
                       VER TODO EL CATÁLOGO
                     </Link>
                     <div className="border-t border-gray-800 my-1"></div>
-                    <Link to="/products?category=Herramientas Eléctricas" className="flex items-center px-5 py-3 text-xs font-bold uppercase tracking-wider text-gray-400 hover:bg-white/5 hover:text-white transition-colors border-l-2 border-transparent hover:border-[#f26522]">
+                    <Link to="/products?category=herramientas-electricas" className="flex items-center px-5 py-3 text-xs font-bold uppercase tracking-wider text-gray-400 hover:bg-white/5 hover:text-white transition-colors border-l-2 border-transparent hover:border-[#f26522]">
                       <PenTool className="h-4 w-4 mr-3 text-[#f26522]" /> Eléctricas
                     </Link>
-                    <Link to="/products?category=Herramientas Manuales" className="flex items-center px-5 py-3 text-xs font-bold uppercase tracking-wider text-gray-400 hover:bg-white/5 hover:text-white transition-colors border-l-2 border-transparent hover:border-[#f26522]">
+                    <Link to="/products?category=herramientas-manuales" className="flex items-center px-5 py-3 text-xs font-bold uppercase tracking-wider text-gray-400 hover:bg-white/5 hover:text-white transition-colors border-l-2 border-transparent hover:border-[#f26522]">
                       <Hammer className="h-4 w-4 mr-3 text-[#f26522]" /> Manuales
                     </Link>
-                    <Link to="/products?category=Soldadura" className="flex items-center px-5 py-3 text-xs font-bold uppercase tracking-wider text-gray-400 hover:bg-white/5 hover:text-white transition-colors border-l-2 border-transparent hover:border-[#f26522]">
+                    <Link to="/products?category=soldadura" className="flex items-center px-5 py-3 text-xs font-bold uppercase tracking-wider text-gray-400 hover:bg-white/5 hover:text-white transition-colors border-l-2 border-transparent hover:border-[#f26522]">
                       <Zap className="h-4 w-4 mr-3 text-[#f26522]" /> Soldadura
                     </Link>
-                    <Link to="/products?category=Almacenamiento" className="flex items-center px-5 py-3 text-xs font-bold uppercase tracking-wider text-gray-400 hover:bg-white/5 hover:text-white transition-colors border-l-2 border-transparent hover:border-[#f26522]">
+                    <Link to="/products?category=almacenamiento" className="flex items-center px-5 py-3 text-xs font-bold uppercase tracking-wider text-gray-400 hover:bg-white/5 hover:text-white transition-colors border-l-2 border-transparent hover:border-[#f26522]">
                       <Wrench className="h-4 w-4 mr-3 text-[#f26522]" /> Accesorios
                     </Link>
                   </div>
@@ -282,25 +282,25 @@ export const Navbar = () => {
                     VER TODO EL CATÁLOGO
                   </Link>
                   <Link
-                    to="/products?category=Herramientas Eléctricas"
+                    to="/products?category=herramientas-electricas"
                     className="flex items-center px-3 py-2 text-xs font-bold uppercase tracking-wider text-gray-400 hover:text-white hover:bg-white/5 rounded transition-colors"
                   >
                     <PenTool className="h-4 w-4 mr-2.5 text-[#f26522]" /> Eléctricas
                   </Link>
                   <Link
-                    to="/products?category=Herramientas Manuales"
+                    to="/products?category=herramientas-manuales"
                     className="flex items-center px-3 py-2 text-xs font-bold uppercase tracking-wider text-gray-400 hover:text-white hover:bg-white/5 rounded transition-colors"
                   >
                     <Hammer className="h-4 w-4 mr-2.5 text-[#f26522]" /> Manuales
                   </Link>
                   <Link
-                    to="/products?category=Soldadura"
+                    to="/products?category=soldadura"
                     className="flex items-center px-3 py-2 text-xs font-bold uppercase tracking-wider text-gray-400 hover:text-white hover:bg-white/5 rounded transition-colors"
                   >
                     <Zap className="h-4 w-4 mr-2.5 text-[#f26522]" /> Soldadura
                   </Link>
                   <Link
-                    to="/products?category=Almacenamiento"
+                    to="/products?category=almacenamiento"
                     className="flex items-center px-3 py-2 text-xs font-bold uppercase tracking-wider text-gray-400 hover:text-white hover:bg-white/5 rounded transition-colors"
                   >
                     <Wrench className="h-4 w-4 mr-2.5 text-[#f26522]" /> Accesorios
