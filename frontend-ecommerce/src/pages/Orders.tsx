@@ -123,13 +123,13 @@ export const Orders = () => {
       <div className="mt-6 relative">
         <div className="overflow-hidden h-2 mb-4 text-xs flex rounded bg-gray-200">
           <div
-            style={{ width: \`\${(currentIndex / (steps.length - 1)) * 100}%\` }}
+            style={{ width: `${(currentIndex / (steps.length - 1)) * 100}%` }}
             className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-[#f26522] transition-all duration-500"
           ></div>
         </div>
         <div className="flex justify-between text-xs sm:text-sm font-bold text-gray-400 uppercase tracking-wider">
           {steps.map((step, idx) => (
-            <div key={step.id} className={\`text-center w-1/4 \${idx <= currentIndex ? 'text-black' : ''}\`}>
+            <div key={step.id} className={`text-center w-1/4 ${idx <= currentIndex ? 'text-black' : ''}`}>
               {step.label}
             </div>
           ))}
@@ -202,7 +202,7 @@ export const Orders = () => {
                 {/* Cuerpo del Pedido: Estado y Seguimiento */}
                 <div className="px-6 py-6 border-b border-gray-100">
                   <div className="flex items-center gap-3 mb-2">
-                    <StatusIcon className={\`w-6 h-6 \${statusConfig[order.status].color}\`} />
+                    <StatusIcon className={`w-6 h-6 ${statusConfig[order.status].color}`} />
                     <h3 className="text-lg font-black uppercase tracking-wide text-gray-900">
                       {statusConfig[order.status].label}
                     </h3>
