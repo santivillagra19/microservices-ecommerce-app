@@ -16,14 +16,10 @@ public class TestDataLoader implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
 
-        Product product = Product.builder()
-                .name("Samsung Galaxy S24")
-                .description("Smartphone con IA")
-                .price(BigDecimal.valueOf(1200))
-                .build();
-
-        productRepository.save(product);
-
-        System.out.println("Datos de prueba cargados: " + product.getName());
+        if (productRepository.count() == 0) {
+            System.out.println("Base de datos de productos vacía. Puedes cargar productos desde el Panel de Admin.");
+        } else {
+            System.out.println("✅ La base de datos ya contiene productos. No se requiere inicialización.");
+        }
     }
 }
