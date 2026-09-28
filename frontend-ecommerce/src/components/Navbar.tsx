@@ -75,8 +75,14 @@ export const Navbar = () => {
       ).slice(0, 5);
 
   return (
-    <nav className="bg-black text-white border-b border-gray-800 sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <>
+      {/* Top Bar Naranja */}
+      <div className="bg-[#f26522] text-white text-xs font-bold uppercase tracking-widest text-center py-2 px-4 flex items-center justify-center gap-2">
+        <span>🔥 ENVÍO GRATIS A TODO EL PAÍS EN COMPRAS SUPERIORES A $150.000</span>
+      </div>
+
+      <nav className="bg-black/75 backdrop-blur-md text-white border-b border-white/10 shadow-lg sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16 gap-3 sm:gap-4">
           
           {/* Menú Izquierdo: Botón Hamburguesa en Mobile + Logo */}
@@ -107,7 +113,7 @@ export const Navbar = () => {
                 <Link to="/products" className="text-gray-300 hover:text-[#f26522] px-3 py-2 text-sm font-medium flex items-center gap-1 transition-colors">
                   <Package className="h-4 w-4"/> Tienda <ChevronDown className="h-3 w-3 ml-1" />
                 </Link>
-                <div className="absolute left-0 mt-0 w-56 bg-black border border-gray-800 border-t-2 border-t-[#f26522] rounded-none shadow-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform translate-y-2 group-hover:translate-y-0 origin-top-left">
+                <div className="absolute left-0 mt-0 w-56 bg-black/85 backdrop-blur-xl border border-white/10 border-t-2 border-t-[#f26522] rounded-none shadow-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform translate-y-2 group-hover:translate-y-0 origin-top-left">
                   <div className="py-1">
                     <Link to="/products" className="block px-5 py-3 text-xs font-black uppercase tracking-wider text-gray-300 hover:bg-white/5 hover:text-[#f26522] transition-colors border-l-2 border-transparent hover:border-[#f26522]">
                       VER TODO EL CATÁLOGO
@@ -242,10 +248,10 @@ export const Navbar = () => {
             {/* Auth */}
             {(isAuthenticated || isAdmin) ? (
               <div className="relative group z-50">
-                <button className="p-2 text-gray-300 hover:text-[#f26522] hover:bg-gray-800 rounded-full transition-colors flex items-center">
+                <button className="p-2 text-gray-300 hover:text-[#f26522] hover:bg-white/10 rounded-full transition-colors flex items-center">
                   <User className="h-6 w-6" />
                 </button>
-                <div className="absolute right-0 mt-0 w-48 bg-black border border-gray-800 border-t-2 border-t-[#f26522] rounded-none shadow-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform translate-y-2 group-hover:translate-y-0 origin-top-right">
+                <div className="absolute right-0 mt-0 w-48 bg-black/85 backdrop-blur-xl border border-white/10 border-t-2 border-t-[#f26522] rounded-none shadow-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform translate-y-2 group-hover:translate-y-0 origin-top-right">
                   <div className="py-1 flex flex-col">
                     <Link to="/orders" className="flex items-center px-4 py-3 text-sm font-medium text-gray-300 hover:bg-white/5 hover:text-white transition-colors border-l-2 border-transparent hover:border-[#f26522]">
                       <ClipboardList className="h-4 w-4 mr-3 text-[#f26522]" /> Mis pedidos
@@ -410,7 +416,8 @@ export const Navbar = () => {
           </div>
         </div>
       )}
-    </nav>
+      </nav>
+    </>
   );
 };
 
