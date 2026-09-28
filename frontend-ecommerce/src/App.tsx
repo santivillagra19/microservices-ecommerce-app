@@ -12,6 +12,7 @@ import { Cart } from './pages/Cart';
 import { Checkout } from './pages/Checkout';
 import { CheckoutSuccess } from './pages/CheckoutSuccess';
 import { Empresas } from './pages/Empresas';
+import { Orders } from './pages/Orders';
 
 function App() {
   return (
@@ -31,6 +32,7 @@ function App() {
           <Route path="inventory" element={<InventoryPage />} />
           <Route path="contact" element={<Contact />} />
           <Route path="empresas" element={<Empresas />} />
+          <Route path="orders" element={<Orders />} />
           <Route path="admin" element={<AdminDashboard />} />
         </Route>
       </Routes>
