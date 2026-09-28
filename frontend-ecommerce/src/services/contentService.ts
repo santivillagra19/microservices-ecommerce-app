@@ -43,10 +43,9 @@ export const mockBanners: Banner[] = [
 ];
 
 export const mockCategorías: Category[] = [
-  { name: 'Herramientas Eléctricas', image: 'https://images.unsplash.com/photo-1646640381839-02748ae8ddf0?auto=format&fit=crop&w=600&q=80', path: 'electricas' },
-  { name: 'Herramientas Manuales', image: 'https://images.unsplash.com/photo-1586864387967-d02ef85d93e8?auto=format&fit=crop&w=600&q=80', path: 'manuales' },
-  { name: 'Soldadura', image: 'https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1?auto=format&fit=crop&w=600&q=80', path: 'soldadura' },
-  { name: 'Accesorios', image: 'https://images.unsplash.com/photo-1613945831677-383c19ad7721?auto=format&fit=crop&w=600&q=80', path: 'accesorios' }
+  { name: 'Herramientas Eléctricas', image: 'https://images.unsplash.com/photo-1646640381839-02748ae8ddf0?auto=format&fit=crop&w=600&q=80', path: 'herramientas-electricas' },
+  { name: 'Herramientas Manuales', image: 'https://images.unsplash.com/photo-1586864387967-d02ef85d93e8?auto=format&fit=crop&w=600&q=80', path: 'herramientas-manuales' },
+  { name: 'Soldadura', image: 'https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1?auto=format&fit=crop&w=600&q=80', path: 'soldadura' }
 ];
 
 export const mockStoreInfo: StoreInfo = {

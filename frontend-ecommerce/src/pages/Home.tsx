@@ -162,7 +162,7 @@ export const Home = () => {
             <h2 className="text-3xl font-black text-black uppercase tracking-tight">Categorías Principales</h2>
             <div className="w-24 h-1 bg-[#f26522] mx-auto mt-4"></div>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
             {categories.map((cat, idx) => (
               <Link to={`/products?category=${cat.path}`} key={idx} className="group relative aspect-square bg-gray-900 overflow-hidden flex items-center justify-center border-2 border-transparent hover:border-[#f26522] transition-all">
                 <img src={cat.image} alt={cat.name} className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-110 group-hover:opacity-40 transition-all duration-700" />
