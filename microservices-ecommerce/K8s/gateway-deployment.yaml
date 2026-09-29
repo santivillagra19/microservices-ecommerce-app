@@ -16,13 +16,20 @@ spec:
     spec:
       containers:
         - name: api-gateway
-          image: api-gateway:latest
+          image: api-gateway:v5
           imagePullPolicy: Never
           ports:
             - containerPort: 9000
           env:
+                        - name: OAUTH2_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: api-gateway-secret
+                  key: oauth2-client-secret
             - name: SPRING_PROFILES_ACTIVE
               value: "k8s"
+            - name: SPRING_THREADS_VIRTUAL_ENABLED
+              value: "true"
             - name: SERVER_PORT
               value: "9000"
             - name: SPRING_CLOUD_CONFIG_ENABLED
@@ -51,3 +58,6 @@ spec:
                 secretKeyRef:
                   name: keycloak-admin-secret
                   key: admin-password
+
+
+

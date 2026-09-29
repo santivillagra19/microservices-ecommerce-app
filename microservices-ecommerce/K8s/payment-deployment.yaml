@@ -39,6 +39,8 @@ spec:
           env:
             - name: SPRING_PROFILES_ACTIVE
               value: "k8s"
+            - name: SPRING_THREADS_VIRTUAL_ENABLED
+              value: "true"
             - name: SERVER_PORT
               value: "8085"
             - name: SPRING_CLOUD_CONFIG_ENABLED
@@ -50,7 +52,10 @@ spec:
             - name: SPRING_RABBITMQ_HOST
               value: "rabbitmq"
             - name: MERCADOPAGO_ACCESS_TOKEN
-              value: "${MERCADOPAGO_ACCESS_TOKEN}"
+              valueFrom:
+                secretKeyRef:
+                  name: mercadopago-secret
+                  key: access-token
             - name: MANAGEMENT_OPENTELEMETRY_TRACING_EXPORT_OTLP_ENDPOINT
               value: "http://lgtm:4318/v1/traces"
             - name: MANAGEMENT_OPENTELEMETRY_LOGGING_EXPORT_OTLP_ENDPOINT
@@ -74,3 +79,8 @@ spec:
     - name: http
       port: 8085
       targetPort: 8085
+
+
+
+
+

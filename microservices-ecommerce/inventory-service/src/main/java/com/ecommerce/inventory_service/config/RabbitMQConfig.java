@@ -32,4 +32,13 @@ public class RabbitMQConfig {
         return BindingBuilder.bind(inventoryQueue).to(orderEventsExchange).with("order.placed");
     }
 
+    @Bean
+    public Queue inventoryCancelledQueue(){
+        return new Queue("inventory-cancelled-queue", true);
+    }
+
+    @Bean
+    public Binding cancelledBinding(Queue inventoryCancelledQueue, TopicExchange orderEventsExchange){
+        return BindingBuilder.bind(inventoryCancelledQueue).to(orderEventsExchange).with("order.cancelled");
+    }
 }

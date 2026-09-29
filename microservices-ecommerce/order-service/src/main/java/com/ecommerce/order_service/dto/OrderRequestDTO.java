@@ -20,5 +20,15 @@ public class OrderRequestDTO {
     @NotBlank(message = "El email es requerido")
     @Email(message = "El formato del email no es vÃ¡lido")
     private String email;
+
+    @NotBlank(message = "El nombre es requerido")
+    private String nombre;
+
+    @NotBlank(message = "El telefono es requerido")
+    private String telefono;
+
+    @NotBlank(message = "La direccion de entrega es requerida")
+    private String direccionEntrega;
+
     private String paymentMethod;
 }

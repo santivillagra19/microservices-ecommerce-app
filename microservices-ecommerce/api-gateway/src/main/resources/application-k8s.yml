@@ -28,6 +28,10 @@ spring:
           uri: http://payment-service:8085
           predicates:
             - Path=/api/v1/payment/**, /api/v1/payment
+        - id: notification-service
+          uri: http://notification-service:8084
+          predicates:
+            - Path=/api/v1/notification/**
 
   rabbitmq:
     host: rabbitmq
@@ -36,7 +40,7 @@ spring:
       resourceserver:
         jwt:
           # jwk-set-uri evita el OIDC discovery al startup (era issuer-uri, costaba ~30s)
-          # Spring Security fetchea el JWKS lazily en la primera validación de JWT
+          # Spring Security fetchea el JWKS lazily en la primera validacin de JWT
           jwk-set-uri: http://keycloak:8080/realms/ecommerce-realm/protocol/openid-connect/certs
 
 eureka:
@@ -45,7 +49,7 @@ eureka:
     fetch-registry: false
     register-with-eureka: false
 
-# Deshabilitar swagger/openapi en k8s (no es necesario en producción)
+# Deshabilitar swagger/openapi en k8s (no es necesario en produccin)
 springdoc:
   api-docs:
     enabled: false

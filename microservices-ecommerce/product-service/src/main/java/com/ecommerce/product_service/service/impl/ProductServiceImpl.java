@@ -31,7 +31,10 @@ public class ProductServiceImpl implements ProductService {
         this.repository = repository;
         this.mapper = mapper;
         this.mongoTemplate = mongoTemplate;
-        this.restClient = restClientBuilder.baseUrl("http://INVENTORY-SERVICE").build();
+        String inventoryUrl = System.getenv("INVENTORY_SERVICE_URL") != null
+                ? System.getenv("INVENTORY_SERVICE_URL")
+                : "http://localhost:8083";
+        this.restClient = restClientBuilder.baseUrl(inventoryUrl).build();
     }
 
     private void computeSlugs(Product product) {

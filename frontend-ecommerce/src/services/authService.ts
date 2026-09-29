@@ -16,19 +16,33 @@ export const authService = {
     params.append('scope', 'openid');
     
 
-    const response = await axios.post(
-      `${KEYCLOAK_URL}/realms/${REALM}/protocol/openid-connect/token`,
-      params,
-      {
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
+    try {
+      const response = await axios.post(
+        `${KEYCLOAK_URL}/realms/${REALM}/protocol/openid-connect/token`,
+        params,
+        {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
         }
-      }
-    );
+      );
 
-    const token = response.data.access_token;
-    localStorage.setItem('jwt_token', token);
-    return token;
+      const token = response.data.access_token;
+      localStorage.setItem('jwt_token', token);
+      return token;
+    } catch (error: any) {
+      if (error.response) {
+        if (error.response.status === 401) {
+          throw new Error("Usuario y/o contraseña incorrectos");
+        }
+        if (error.response.status >= 500) {
+          throw new Error("En este momento el servidor no está disponible");
+        }
+      } else if (error.request) {
+        throw new Error("En este momento el servidor no está disponible");
+      }
+      throw error;
+    }
   },
   
   register: async (username: string, email: string, password: string, firstName: string, lastName: string):Promise<boolean> => {
@@ -36,8 +50,15 @@ export const authService = {
       await api.post('/users/register', { username, email, password, firstName, lastName });
       return true;
     } catch (error: any) {
-      if (error.response && error.response.status === 409) {
-        throw new Error("Usuario ya registrado, inicie sesión.");
+      if (error.response) {
+        if (error.response.status === 409) {
+          throw new Error("Usuario ya registrado, inicie sesión.");
+        }
+        if (error.response.status >= 500) {
+          throw new Error("En este momento el servidor no está disponible");
+        }
+      } else if (error.request) {
+        throw new Error("En este momento el servidor no está disponible");
       }
       throw error;
     }
@@ -68,6 +89,8 @@ export const authService = {
 
   logout: () => {
     localStorage.removeItem('jwt_token');
+    // We can also clear cart here if imported, but we don't have the import here. 
+    // Wait, I will just leave the Navbar one which handles explicit user interaction.
   },
   
   getToken: () => {

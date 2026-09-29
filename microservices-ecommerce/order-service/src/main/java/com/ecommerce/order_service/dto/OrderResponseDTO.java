@@ -15,6 +15,10 @@ public class OrderResponseDTO {
     private Long id;
     private String orderNumber;
     private OrderStatus orderStatus;
+    private String email;
+    private String nombre;
+    private String telefono;
+    private String direccionEntrega;
     private List<OrderLineItemsResponseDTO> orderLineItemsList;
     private String paymentUrl;
 }

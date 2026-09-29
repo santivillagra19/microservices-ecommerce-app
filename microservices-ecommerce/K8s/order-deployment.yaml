@@ -21,8 +21,12 @@ spec:
           env:
             - name: SPRING_PROFILES_ACTIVE
               value: "k8s"
+            - name: SPRING_THREADS_VIRTUAL_ENABLED
+              value: "true"
             - name: SERVER_PORT
               value: "8082"
+            - name: MERCADOPAGO_WEBHOOK_URL
+              value: "https://AQUI-TU-NGROK.ngrok-free.app/api/v1/webhook/mercadopago"
             - name: SPRING_CLOUD_CONFIG_ENABLED
               value: "false"
             - name: EUREKA_CLIENT_ENABLED
@@ -48,7 +52,10 @@ spec:
             - name: SPRING_DATASOURCE_USERNAME
               value: "admin"
             - name: SPRING_DATASOURCE_PASSWORD
-              value: "admin"
+              valueFrom:
+                secretKeyRef:
+                  name: databases-secret
+                  key: postgres-order-password
             - name: SPRING_RABBITMQ_HOST
               value: "rabbitmq"
             - name: SPRING_JPA_HIBERNATE_DDL_AUTO
@@ -64,3 +71,7 @@ spec:
   ports:
     - port: 8082
       targetPort: 8082
+
+
+
+

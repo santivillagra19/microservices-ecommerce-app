@@ -31,6 +31,14 @@ public class RabbitMQConfig {
     }
 
     @Bean
+    public Queue notificationPlacedQueue(){
+        return QueueBuilder.durable("notification-placed-queue")
+                .withArgument("x-dead-letter-exchange", "notification-dlx")
+                .withArgument("x-dead-letter-routing-key", "notification.dead")
+                .build();
+    }
+
+    @Bean
     public TopicExchange orderEventsExchange(){
         return new TopicExchange("order-events");
     }
@@ -43,6 +51,11 @@ public class RabbitMQConfig {
     @Bean
     public Binding cancelledBinding(Queue notificationCancelledQueue, TopicExchange orderEventsExchange){
         return BindingBuilder.bind(notificationCancelledQueue).to(orderEventsExchange).with("order.cancelled");
+    }
+
+    @Bean
+    public Binding placedBinding(Queue notificationPlacedQueue, TopicExchange orderEventsExchange){
+        return BindingBuilder.bind(notificationPlacedQueue).to(orderEventsExchange).with("order.placed");
     }
 
     @Bean

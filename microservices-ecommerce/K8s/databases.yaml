@@ -21,7 +21,10 @@ spec:
             - name: MONGO_INITDB_ROOT_USERNAME
               value: "root"
             - name: MONGO_INITDB_ROOT_PASSWORD
-              value: "password"
+              valueFrom:
+                secretKeyRef:
+                  name: databases-secret
+                  key: mongo-root-password
           volumeMounts:
             - name: mongo-storage
               mountPath: /data/db
@@ -62,7 +65,10 @@ spec:
             - containerPort: 3306
           env:
             - name: MYSQL_ROOT_PASSWORD
-              value: "root"
+              valueFrom:
+                secretKeyRef:
+                  name: databases-secret
+                  key: mysql-root-password
             - name: MYSQL_DATABASE
               value: "inventory-db"
           volumeMounts:
@@ -107,7 +113,10 @@ spec:
             - name: POSTGRES_USER
               value: "admin"
             - name: POSTGRES_PASSWORD
-              value: "admin"
+              valueFrom:
+                secretKeyRef:
+                  name: databases-secret
+                  key: postgres-order-password
             - name: POSTGRES_DB
               value: "order-db"
           volumeMounts:
@@ -152,7 +161,10 @@ spec:
             - name: POSTGRES_USER
               value: "keycloak"
             - name: POSTGRES_PASSWORD
-              value: "password"
+              valueFrom:
+                secretKeyRef:
+                  name: databases-secret
+                  key: postgres-keycloak-password
             - name: POSTGRES_DB
               value: "keycloak-db"
           volumeMounts:

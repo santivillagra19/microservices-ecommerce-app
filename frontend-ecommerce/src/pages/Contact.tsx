@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Mail, Phone, MapPin, Send, Clock, AlertCircle } from 'lucide-react';
 import { Button } from '../components/ui/Button';
+import { Input } from '../components/ui/Input';
+import { Textarea } from '../components/ui/Textarea';
+import { notificationService } from '../services/notificationService';
 import { contentService, type StoreInfo } from '../services/contentService';
 import { toast } from 'sonner';
 
@@ -26,18 +29,27 @@ export const Contact = () => {
     fetchStoreInfo();
   }, []);
 
-  const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
-    // Simulate form submission to an endpoint
-    setTimeout(() => {
+    try {
+      await notificationService.submitContactForm({
+        nombre: formData.name,
+        email: formData.email,
+        mensaje: formData.message,
+        tipoConsulta: 'Contacto General'
+      });
       toast.success('Mensaje enviado', {
         description: 'Nos pondremos en contacto contigo a la brevedad.',
       });
-      setIsSubmitting(false);
       setFormData({ name: '', email: '', message: '' });
-    }, 1000);
+    } catch (error) {
+      toast.error('Error al enviar el mensaje', {
+        description: 'Por favor, inténtalo de nuevo más tarde.',
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -112,56 +124,36 @@ export const Contact = () => {
         {/* Contact Form */}
         <div className="bg-white p-8 rounded-none border-t-4 border-[#f26522] shadow-2xl">
           <form onSubmit={handleSubmit} className="space-y-6">
-            <div>
-              <label htmlFor="name" className="block text-sm font-black text-gray-900 uppercase tracking-wider">
-                Nombre Completo
-              </label>
-              <div className="mt-1">
-                <input
-                  type="text"
-                  name="name"
-                  id="name"
-                  required
-                  value={formData.name}
-                  onChange={handleChange}
-                  className="py-3 px-4 block w-full shadow-sm focus:ring-0 focus:border-[#f26522] border-2 border-gray-200 rounded-none transition-colors"
-                />
-              </div>
-            </div>
+            <Input
+              label="Nombre Completo"
+              type="text"
+              name="name"
+              id="name"
+              required
+              value={formData.name}
+              onChange={handleChange}
+            />
 
-            <div>
-              <label htmlFor="email" className="block text-sm font-black text-gray-900 uppercase tracking-wider">
-                Correo Electrónico
-              </label>
-              <div className="mt-1">
-                <input
-                  type="email"
-                  name="email"
-                  id="email"
-                  required
-                  value={formData.email}
-                  onChange={handleChange}
-                  className="py-3 px-4 block w-full shadow-sm focus:ring-0 focus:border-[#f26522] border-2 border-gray-200 rounded-none transition-colors"
-                />
-              </div>
-            </div>
+            <Input
+              label="Correo Electrónico"
+              type="email"
+              name="email"
+              id="email"
+              required
+              value={formData.email}
+              onChange={handleChange}
+            />
 
-            <div>
-              <label htmlFor="message" className="block text-sm font-black text-gray-900 uppercase tracking-wider">
-                Mensaje
-              </label>
-              <div className="mt-1">
-                <textarea
-                  id="message"
-                  name="message"
-                  rows={4}
-                  required
-                  value={formData.message}
-                  onChange={handleChange}
-                  className="py-3 px-4 block w-full shadow-sm focus:ring-0 focus:border-[#f26522] border-2 border-gray-200 rounded-none transition-colors resize-none"
-                />
-              </div>
-            </div>
+            <Textarea
+              label="Mensaje"
+              id="message"
+              name="message"
+              rows={4}
+              required
+              value={formData.message}
+              onChange={handleChange}
+              className="resize-none"
+            />
 
             <div>
               <Button

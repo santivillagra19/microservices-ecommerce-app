@@ -39,6 +39,7 @@ public class InventoryController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "Get all inventory", description = "Retrieves the complete list of inventory records")
     public List<InventoryResponseDTO> getAllInventory(HttpServletRequest request) {
 
 
@@ -46,6 +47,7 @@ public class InventoryController {
     }
 
     @PutMapping("/{id}")
+    @Operation(summary = "Update inventory", description = "Updates an existing inventory record by its ID")
     public ResponseEntity<InventoryResponseDTO> updateInventory(@PathVariable Long id, @Valid @RequestBody InventoryRequestDTO inventoryRequest) {
         InventoryResponseDTO response = inventoryService.updateInventory(id, inventoryRequest);
         return ResponseEntity.ok(response);
@@ -53,6 +55,7 @@ public class InventoryController {
 
     @PutMapping("/reduce/{sku}")
     @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "Reduce stock", description = "Reduces the stock of a given SKU by the specified quantity")
     public String reduceStock(@PathVariable String sku, @RequestParam Integer quantity) {
         inventoryService.reduceStock(sku, quantity);
         return "Stock reducido exitosamente";
@@ -60,6 +63,7 @@ public class InventoryController {
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @Operation(summary = "Delete inventory", description = "Removes an inventory record by its ID")
     public void deleteInventory(@PathVariable Long id) {
         inventoryService.deleteInventory(id);
     }

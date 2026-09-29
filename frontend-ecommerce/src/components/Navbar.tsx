@@ -22,6 +22,7 @@ export const Navbar = () => {
   const totalItems = useCartStore((state) => 
     state.items.reduce((total, item) => total + item.quantity, 0)
   );
+  const clearCart = useCartStore((state) => state.clearCart);
 
   useEffect(() => {
     // Cargar productos para el autocompletado de la barra de búsqueda
@@ -53,6 +54,7 @@ export const Navbar = () => {
 
   const handleLogout = () => {
     authService.logout();
+    clearCart();
     setIsAuthenticated(false);
     setIsAdmin(false);
     navigate('/login');
@@ -75,7 +77,7 @@ export const Navbar = () => {
       ).slice(0, 5);
 
   return (
-    <nav className="bg-black/75 backdrop-blur-md text-white border-b border-white/10 shadow-lg sticky top-0 z-50">
+    <nav className="w-full bg-black/75 backdrop-blur-md text-white border-b border-white/10 shadow-lg sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16 gap-3 sm:gap-4">
           

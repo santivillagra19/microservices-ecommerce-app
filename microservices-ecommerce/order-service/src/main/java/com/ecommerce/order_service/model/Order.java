@@ -20,6 +20,11 @@ public class Order {
 
     private String userId;
 
+    private String email;
+    private String nombre;
+    private String telefono;
+    private String direccionEntrega;
+
     @Enumerated(EnumType.STRING)
     private OrderStatus orderStatus;
 

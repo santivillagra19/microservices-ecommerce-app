@@ -17,10 +17,8 @@ import com.mercadopago.resources.preference.Preference;
 import com.ecommerce.order_service.repository.OrderRepository;
 import com.ecommerce.order_service.service.OrderService;
 import com.ecommerce.order_service.service.OutboxService;
-import com.ecommerce.order_service.service.client.InventoryClient;
+import com.ecommerce.order_service.service.MercadoPagoService;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
-import io.github.resilience4j.retry.annotation.Retry;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.AmqpException;
@@ -44,6 +42,7 @@ public class OrderServiceImpl implements OrderService {
     private final OrderMapper orderMapper;
     private final RabbitTemplate rabbitTemplate;
     private final OutboxService outboxService;
+    private final MercadoPagoService mercadoPagoService;
 
     @Value("${$order.enabled:true}")
     private boolean orderEnabled;
@@ -51,10 +50,8 @@ public class OrderServiceImpl implements OrderService {
     @Value("${mercadopago.access-token:}")
     private String mpAccessToken;
 
-    public OrderResponseDTO fallbackMethod(OrderRequestDTO orderRequestDTO, String userId, Throwable throwable){
-            log.error("Circuit Breaker activado. Causa: {}", throwable.getMessage());
-            throw new RuntimeException("El servicio de Inventario no responde, por favor intente mas tarde.");
-    }
+    @Value("${mercadopago.webhook-url:}")
+    private String mpWebhookUrl;
 
     @Override
     @Transactional
@@ -130,17 +127,25 @@ public class OrderServiceImpl implements OrderService {
                             ))
                             .build();
 
-                    PreferenceRequest preferenceRequest = PreferenceRequest.builder()
+                    PreferenceRequest.PreferenceRequestBuilder preferenceRequestBuilder = PreferenceRequest.builder()
                             .items(items)
                             .backUrls(backUrls)
                             .externalReference(savedOrder.getOrderNumber())
-                            .paymentMethods(paymentMethods)
-                            .build();
+                            .paymentMethods(paymentMethods);
 
-                    PreferenceClient client = new PreferenceClient();
-                    Preference preference = client.create(preferenceRequest);
+                    if (mpWebhookUrl != null && !mpWebhookUrl.isBlank()) {
+                        preferenceRequestBuilder.notificationUrl(mpWebhookUrl);
+                    }
                     
-                    responseDTO.setPaymentUrl(preference.getSandboxInitPoint());
+                    PreferenceRequest preferenceRequest = preferenceRequestBuilder.build();
+
+                    Preference preference = mercadoPagoService.createPreference(preferenceRequest);
+                    
+                    if (preference == null) {
+                        responseDTO.setPaymentUrl("http://localhost:5173/checkout/success?orderNumber=" + savedOrder.getOrderNumber());
+                    } else {
+                        responseDTO.setPaymentUrl(preference.getInitPoint());
+                    }
                 } catch (com.mercadopago.exceptions.MPApiException apiException) {
                     log.warn("MercadoPago API call failed (probably invalid test token or config). Error: {}", apiException.getApiResponse().getContent());
                     responseDTO.setPaymentUrl("http://localhost:5173/checkout/success?orderNumber=" + savedOrder.getOrderNumber());

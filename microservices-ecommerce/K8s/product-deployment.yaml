@@ -14,23 +14,32 @@ spec:
     spec:
       containers:
         - name: product-service
-          image: product-service:v23
+          image: product-service:v24
           imagePullPolicy: Never
           ports:
             - containerPort: 8081
           env:
             - name: SPRING_PROFILES_ACTIVE
               value: "k8s"
+            - name: SPRING_THREADS_VIRTUAL_ENABLED
+              value: "true"
             - name: SERVER_PORT
               value: "8081"
             - name: SPRING_CLOUD_CONFIG_ENABLED
               value: "false"
             - name: EUREKA_CLIENT_ENABLED
               value: "false"
+            - name: INVENTORY_SERVICE_URL
+              value: "http://inventory-service:8083"
             - name: SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI
               value: "http://keycloak:8080/realms/ecommerce-realm"
+            - name: MONGO_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: databases-secret
+                  key: mongo-root-password
             - name: SPRING_DATA_MONGODB_URI
-              value: "mongodb://root:password@mongodb:27017/product-db?authSource=admin"
+              value: "mongodb://root:$(MONGO_ROOT_PASSWORD)@mongodb:27017/product-db?authSource=admin"
             - name: CLOUDINARY_CLOUD_NAME
               valueFrom:
                 secretKeyRef:
@@ -47,7 +56,7 @@ spec:
                   name: cloudinary-secrets
                   key: CLOUDINARY_API_SECRET
             - name: JAVA_TOOL_OPTIONS
-              value: "-Dspring.data.mongodb.uri=mongodb://root:password@mongodb:27017/product-db?authSource=admin -Dspring.data.mongodb.host=mongodb -Dspring.data.mongodb.port=27017 -Dspring.data.mongodb.database=product-db -Dspring.data.mongodb.username=root -Dspring.data.mongodb.password=password -Dspring.data.mongodb.authentication-database=admin"
+              value: "-Dspring.data.mongodb.uri=mongodb://root:$(MONGO_ROOT_PASSWORD)@mongodb:27017/product-db?authSource=admin -Dspring.data.mongodb.host=mongodb -Dspring.data.mongodb.port=27017 -Dspring.data.mongodb.database=product-db -Dspring.data.mongodb.username=root -Dspring.data.mongodb.password=$(MONGO_ROOT_PASSWORD) -Dspring.data.mongodb.authentication-database=admin"
 ---
 apiVersion: v1
 kind: Service
@@ -59,3 +68,10 @@ spec:
   ports:
     - port: 8081
       targetPort: 8081
+
+
+
+
+
+
+

@@ -58,4 +58,23 @@ public class OrderEventsListener {
         log.info("Correo enviado exitosamente para la orden: {}", event.orderNumber());
     }
 
+    @RabbitListener(queues = "notification-placed-queue")
+    public void handleOrderPlacedEvent(com.ecommerce.notification_service.event.OrderPlacedEvent event) {
+        log.info("Pedido recibido para la Orden: {}", event.orderNumber());
+
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom("pedidos@ecommerce.com");
+        message.setTo(event.email());
+        message.setSubject("Hemos recibido tu pedido: " + event.orderNumber());
+        message.setText("Hola,\n\n" +
+                "¡Gracias por tu compra! Hemos recibido tu pedido con número " + event.orderNumber() + " y actualmente se encuentra en estado de verificación de stock y pago.\n\n" +
+                "Te enviaremos una notificación cuando sea confirmado.\n\n" +
+                "Atentamente,\n" +
+                "El equipo de E-Commerce");
+
+        mailSender.send(message);
+
+        log.info("Correo enviado exitosamente para la orden recibida (placed): {}", event.orderNumber());
+    }
+
 }

@@ -11,12 +11,16 @@ import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/product")
 @RequiredArgsConstructor
 @RefreshScope
+@Tag(name = "Product", description = "Endpoints for managing products")
 public class ProductController {
 
     private final ProductService productService;
@@ -26,12 +30,14 @@ public class ProductController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    @Operation(summary = "Create product", description = "Adds a new product to the catalog")
     public ProductResponseDTO createProduct(@RequestBody ProductRequestDTO productRequestDTO) {
         return productService.createProduct(productRequestDTO);
     }
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "Get all products", description = "Retrieves a list of all products, optionally filtered by search, category, brand, and price range")
     public List<ProductResponseDTO> getAllProducts(
             @RequestParam(required = false) String search,
             @RequestParam(required = false) String category,
@@ -44,18 +50,21 @@ public class ProductController {
     }
 
     @GetMapping("/{id}")
+    @Operation(summary = "Get product by ID", description = "Retrieves details of a specific product by its ID")
     public ProductResponseDTO getProductById(@PathVariable String id) {
         return productService.getProductById(id);
     }
 
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "Update product", description = "Updates an existing product's details")
     public ProductResponseDTO updateProduct(@PathVariable String id,@RequestBody @Valid ProductRequestDTO productRequest) {
         return productService.updateProduct(id, productRequest);
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @Operation(summary = "Delete product", description = "Removes a product from the catalog")
     public void deleteProduct(@PathVariable String id) {
         productService.deleteProduct(id);
     }

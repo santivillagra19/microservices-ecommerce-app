@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Building2, FileText, Users, Send, CheckCircle2, ShieldCheck } from 'lucide-react';
 import { Button } from '../components/ui/Button';
+import { Input } from '../components/ui/Input';
+import { Textarea } from '../components/ui/Textarea';
+import { notificationService } from '../services/notificationService';
 import { toast } from 'sonner';
 
 export const Empresas = () => {
@@ -19,18 +22,29 @@ export const Empresas = () => {
     window.scrollTo(0, 0);
   }, []);
 
-  const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
-    // Simulate form submission
-    setTimeout(() => {
+    try {
+      await notificationService.submitContactForm({
+        nombre: formData.contactName,
+        email: formData.email,
+        telefono: formData.phone,
+        empresa: formData.companyName + ' (CUIT: ' + formData.cuit + ')',
+        mensaje: formData.message,
+        tipoConsulta: 'Atención a Empresas / Presupuesto'
+      });
       toast.success('Solicitud enviada correctamente', {
         description: 'Un asesor comercial se contactará a la brevedad.',
       });
-      setIsSubmitting(false);
       setFormData({ companyName: '', cuit: '', contactName: '', email: '', phone: '', message: '' });
-    }, 1200);
+    } catch (error) {
+      toast.error('Error al enviar solicitud', {
+        description: 'Por favor, inténtelo de nuevo más tarde.',
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -99,103 +113,74 @@ export const Empresas = () => {
           </h2>
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              <div>
-                <label htmlFor="companyName" className="block text-sm font-black text-gray-900 uppercase tracking-wider">
-                  Razón Social / Empresa
-                </label>
-                <input
-                  type="text"
-                  name="companyName"
-                  id="companyName"
-                  required
-                  value={formData.companyName}
-                  onChange={handleChange}
-                  className="mt-2 py-3 px-4 block w-full focus:ring-0 focus:border-[#f26522] border-2 border-gray-200 transition-colors"
-                />
-              </div>
-              <div>
-                <label htmlFor="cuit" className="block text-sm font-black text-gray-900 uppercase tracking-wider">
-                  CUIT
-                </label>
-                <input
-                  type="text"
-                  name="cuit"
-                  id="cuit"
-                  required
-                  value={formData.cuit}
-                  onChange={handleChange}
-                  className="mt-2 py-3 px-4 block w-full focus:ring-0 focus:border-[#f26522] border-2 border-gray-200 transition-colors"
-                />
-              </div>
+              <Input
+                label="Razón Social / Empresa"
+                type="text"
+                name="companyName"
+                id="companyName"
+                required
+                value={formData.companyName}
+                onChange={handleChange}
+              />
+              <Input
+                label="CUIT"
+                type="text"
+                name="cuit"
+                id="cuit"
+                required
+                value={formData.cuit}
+                onChange={handleChange}
+              />
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              <div>
-                <label htmlFor="contactName" className="block text-sm font-black text-gray-900 uppercase tracking-wider">
-                  Nombre de Contacto
-                </label>
-                <input
-                  type="text"
-                  name="contactName"
-                  id="contactName"
-                  required
-                  value={formData.contactName}
-                  onChange={handleChange}
-                  className="mt-2 py-3 px-4 block w-full focus:ring-0 focus:border-[#f26522] border-2 border-gray-200 transition-colors"
-                />
-              </div>
-              <div>
-                <label htmlFor="phone" className="block text-sm font-black text-gray-900 uppercase tracking-wider">
-                  Teléfono
-                </label>
-                <input
-                  type="tel"
-                  name="phone"
-                  id="phone"
-                  required
-                  value={formData.phone}
-                  onChange={handleChange}
-                  className="mt-2 py-3 px-4 block w-full focus:ring-0 focus:border-[#f26522] border-2 border-gray-200 transition-colors"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label htmlFor="email" className="block text-sm font-black text-gray-900 uppercase tracking-wider">
-                Correo Electrónico (Institucional)
-              </label>
-              <input
-                type="email"
-                name="email"
-                id="email"
+              <Input
+                label="Nombre de Contacto"
+                type="text"
+                name="contactName"
+                id="contactName"
                 required
-                value={formData.email}
+                value={formData.contactName}
                 onChange={handleChange}
-                className="mt-2 py-3 px-4 block w-full focus:ring-0 focus:border-[#f26522] border-2 border-gray-200 transition-colors"
+              />
+              <Input
+                label="Teléfono"
+                type="tel"
+                name="phone"
+                id="phone"
+                required
+                value={formData.phone}
+                onChange={handleChange}
               />
             </div>
 
-            <div>
-              <label htmlFor="message" className="block text-sm font-black text-gray-900 uppercase tracking-wider">
-                Herramientas o insumos requeridos
-              </label>
-              <textarea
-                id="message"
-                name="message"
-                rows={5}
-                required
-                placeholder="Ej: Necesitamos cotizar 5 taladros percutores DeWalt, 2 amoladoras y discos de corte..."
-                value={formData.message}
-                onChange={handleChange}
-                className="mt-2 py-3 px-4 block w-full focus:ring-0 focus:border-[#f26522] border-2 border-gray-200 transition-colors resize-none"
-              />
-            </div>
+            <Input
+              label="Correo Electrónico (Institucional)"
+              type="email"
+              name="email"
+              id="email"
+              required
+              value={formData.email}
+              onChange={handleChange}
+            />
+
+            <Textarea
+              label="Herramientas o insumos requeridos"
+              id="message"
+              name="message"
+              rows={5}
+              required
+              placeholder="Ej: Necesitamos cotizar 5 taladros percutores DeWalt, 2 amoladoras y discos de corte..."
+              value={formData.message}
+              onChange={handleChange}
+              className="resize-none"
+            />
 
             <Button
               type="submit"
               variant="primary"
               disabled={isSubmitting}
-              className="w-full !py-4 text-base"
+              className="w-full !py-4 text-base mt-2"
               icon={Send}
             >
               {isSubmitting ? 'ENVIANDO SOLICITUD...' : 'ENVIAR SOLICITUD DE COTIZACIÓN'}

@@ -21,6 +21,8 @@ spec:
           env:
             - name: SPRING_PROFILES_ACTIVE
               value: "k8s"
+            - name: SPRING_THREADS_VIRTUAL_ENABLED
+              value: "true"
             - name: SERVER_PORT
               value: "8083"
             - name: SPRING_CLOUD_CONFIG_ENABLED
@@ -42,7 +44,10 @@ spec:
             - name: SPRING_DATASOURCE_USERNAME
               value: "root"
             - name: SPRING_DATASOURCE_PASSWORD
-              value: "root"
+              valueFrom:
+                secretKeyRef:
+                  name: databases-secret
+                  key: mysql-root-password
             - name: SPRING_RABBITMQ_HOST
               value: "rabbitmq"
             - name: SPRING_JPA_HIBERNATE_DDL_AUTO
@@ -58,3 +63,7 @@ spec:
   ports:
     - port: 8083
       targetPort: 8083
+
+
+
+

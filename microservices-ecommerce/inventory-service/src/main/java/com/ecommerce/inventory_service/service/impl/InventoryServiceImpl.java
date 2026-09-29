@@ -108,6 +108,16 @@ public class InventoryServiceImpl implements InventoryService {
 
         inventory.setQuantity(inventory.getQuantity() - quantity);
         inventoryRepository.save(inventory);
+    }
 
+    @Override
+    @Transactional
+    public void addStock(String sku, Integer quantity) {
+        var inventory = inventoryRepository.findBySku(sku)
+                .orElseThrow(
+                        () -> new RuntimeException("Producto no encontrado para: " + sku)
+                );
+        inventory.setQuantity(inventory.getQuantity() + quantity);
+        inventoryRepository.save(inventory);
     }
 }

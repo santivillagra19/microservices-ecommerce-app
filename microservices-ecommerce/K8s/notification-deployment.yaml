@@ -14,13 +14,15 @@ spec:
     spec:
       containers:
         - name: notification-service
-          image: notification-service:latest
+          image: notification-service:v2
           imagePullPolicy: Never
           ports:
             - containerPort: 8084
           env:
             - name: SPRING_PROFILES_ACTIVE
               value: "k8s"
+            - name: SPRING_THREADS_VIRTUAL_ENABLED
+              value: "true"
             - name: SERVER_PORT
               value: "8084"
             - name: SPRING_CLOUD_CONFIG_ENABLED
@@ -30,13 +32,23 @@ spec:
             - name: SPRING_RABBITMQ_HOST
               value: "rabbitmq"
             - name: SPRING_MAIL_HOST
-              value: "sandbox.smtp.mailtrap.io"
+              value: "smtp.gmail.com"
             - name: SPRING_MAIL_PORT
-              value: "2525"
+              value: "587"
             - name: SPRING_MAIL_USERNAME
-              value: "TU_USERNAME_MAILTRAP"
+              valueFrom:
+                secretKeyRef:
+                  name: email-secret
+                  key: username
             - name: SPRING_MAIL_PASSWORD
-              value: "TU_PASSWORD_MAILTRAP"
+              valueFrom:
+                secretKeyRef:
+                  name: email-secret
+                  key: password
+            - name: SPRING_MAIL_PROPERTIES_MAIL_SMTP_AUTH
+              value: "true"
+            - name: SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE
+              value: "true"
 ---
 apiVersion: v1
 kind: Service
@@ -48,3 +60,7 @@ spec:
   ports:
     - port: 8084
       targetPort: 8084
+
+
+
+

@@ -62,10 +62,12 @@ public class SecurityConfig {
                         .pathMatchers(HttpMethod.POST, "/api/v1/users/register").permitAll()
                         .pathMatchers(HttpMethod.POST, "/api/v1/product/image").permitAll()
                         .pathMatchers("/api/v1/payment/**", "/api/v1/payment").permitAll()
+                        .pathMatchers("/api/v1/notification/**", "/api/v1/notification").permitAll()
+                        .pathMatchers("/api/v1/webhook/**").permitAll()
                         .pathMatchers("/api/v1/product/**", "/api/v1/product").hasRole(Role.ADMIN.name())
                         .pathMatchers("/api/v1/inventory/**", "/api/v1/inventory").hasRole(Role.ADMIN.name())
 
-                        .pathMatchers(HttpMethod.POST, "/api/v1/order/**", "/api/v1/order").hasAnyRole(Role.ADMIN.name(), Role.USER.name())
+                        .pathMatchers(HttpMethod.POST, "/api/v1/order/**", "/api/v1/order").permitAll()
                         .pathMatchers(HttpMethod.GET, "/api/v1/order/**", "/api/v1/order").hasAnyRole(Role.ADMIN.name(), Role.USER.name())
                         .pathMatchers(HttpMethod.PUT, "/api/v1/order/**", "/api/v1/order").hasRole(Role.ADMIN.name())
                         .pathMatchers(HttpMethod.DELETE, "/api/v1/order/**", "/api/v1/order").hasRole(Role.ADMIN.name())

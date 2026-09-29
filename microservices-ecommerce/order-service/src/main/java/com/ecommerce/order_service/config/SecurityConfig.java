@@ -17,6 +17,8 @@ public class SecurityConfig {
         http.csrf(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests(auth -> auth
                     .requestMatchers("/actuator/**").permitAll()
+                    .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/v1/order").permitAll()
+                    .requestMatchers("/api/v1/webhook/**").permitAll()
                     .anyRequest().authenticated()
             )
             .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()));

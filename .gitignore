@@ -37,3 +37,7 @@ Thumbs.db
 *_output.txt
 admin_token.txt
 
+
+# K8s Secrets
+microservices-ecommerce/K8s/secrets-production.yaml
+microservices-ecommerce/K8s/keycloak-secrets.yaml
