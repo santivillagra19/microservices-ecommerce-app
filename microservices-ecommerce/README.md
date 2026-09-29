@@ -27,11 +27,16 @@ El proyecto se divide en módulos independientes, cada uno responsable de un con
 ```text
 microservices-ecommerce/
 ├── api-gateway/          # Puerta de entrada, enrutamiento y validación JWT
-├── product-service/      # Gestión del catálogo (MongoDB)
-├── order-service/        # Gestión de compras y pagos con MercadoPago (PostgreSQL)
+├── config-server/        # Servidor centralizado de configuración (Spring Cloud Config)
+├── config-data/          # Archivos de configuración (.yml) para el config-server
+├── discovery-server/     # Servidor de registro y descubrimiento (Eureka)
 ├── inventory-service/    # Control de stock y reservas (MySQL)
 ├── notification-service/ # Escucha eventos (RabbitMQ) para envíos de emails/alertas
-├── k8s/                  # Manifiestos de Kubernetes (Deployments, Services, ConfigMaps)
+├── order-service/        # Gestión de compras (PostgreSQL)
+├── payment-service/      # Integración de pagos con MercadoPago
+├── product-service/      # Gestión del catálogo de productos (MongoDB)
+├── tests/                # Pruebas End-to-End (e2e) del sistema completo
+├── K8s/                  # Manifiestos de Kubernetes (Deployments, Services, ConfigMaps)
 ├── docker-compose.yml    # Entorno local de desarrollo (BBDD, RabbitMQ, Keycloak)
 └── context.md            # Documentación detallada de la API y endpoints
 ```
@@ -117,3 +122,4 @@ kubectl port-forward service/keycloak 8080:8080
 ```
 
 ¡Listo! La API estará completamente operativa en `http://localhost:9000`.
+
