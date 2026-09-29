@@ -26,14 +26,14 @@ El proyecto se divide en módulos independientes, cada uno responsable de un con
 
 `	ext
 microservices-ecommerce/
-├── 📂 api-gateway/            # Puerta de entrada, enrutamiento y validación JWT.
-├── 📂 product-service/        # Gestión del catálogo (MongoDB).
-├── 📂 order-service/          # Gestión de compras y pagos con MercadoPago (PostgreSQL).
-├── 📂 inventory-service/      # Control de stock y reservas (MySQL).
-├── 📂 notification-service/   # Escucha eventos (RabbitMQ) para envíos de emails/alertas.
-├── 📂 k8s/                    # Manifiestos de Kubernetes (Deployments, Services, ConfigMaps).
-├── 📄 docker-compose.yml      # Entorno local de desarrollo (BBDD, RabbitMQ, Keycloak).
-└── 📄 context.md              # Documentación detallada de la API y endpoints.
+├── api-gateway/          # Puerta de entrada, enrutamiento y validación JWT
+├── product-service/      # Gestión del catálogo (MongoDB)
+├── order-service/        # Gestión de compras y pagos con MercadoPago (PostgreSQL)
+├── inventory-service/    # Control de stock y reservas (MySQL)
+├── notification-service/ # Escucha eventos (RabbitMQ) para envíos de emails/alertas
+├── k8s/                  # Manifiestos de Kubernetes (Deployments, Services, ConfigMaps)
+├── docker-compose.yml    # Entorno local de desarrollo (BBDD, RabbitMQ, Keycloak)
+└── context.md            # Documentación detallada de la API y endpoints
 `
 
 ## ⚙️ Patrones de Diseño Aplicados
@@ -117,3 +117,4 @@ kubectl port-forward service/keycloak 8080:8080
 `
 
 ¡Listo! La API estará completamente operativa en http://localhost:9000.
+
