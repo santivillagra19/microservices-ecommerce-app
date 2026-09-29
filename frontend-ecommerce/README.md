@@ -1,32 +1,38 @@
-# React + TypeScript + Vite
+# 🛠️ Ferrestore E-Commerce - Aplicación Cliente (Frontend)
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+¡Bienvenido a la interfaz de **Ferrestore**! 🚀 Una plataforma moderna, rápida y reactiva para la venta de herramientas. Este proyecto consume nuestra arquitectura de microservicios, ofreciendo una experiencia de usuario fluida, segura y escalable.
 
-Currently, two official plugins are available:
+## 🌟 Objetivo del Proyecto
+Construir una interfaz de usuario que no solo luzca bien, sino que sea capaz de manejar estados complejos (carritos de compra interconectados con inventario en tiempo real), autenticación delegada y flujos de pago asíncronos (MercadoPago), manteniendo un rendimiento óptimo en el navegador.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## 🚀 Tecnologías Destacadas
+* **Core:** React.js con TypeScript para un tipado estático seguro y escalable.
+* **Estilos:** TailwindCSS / CSS / Componentes a medida (según implementación).
+* **Seguridad:** Integración con Keycloak mediante OIDC (OpenID Connect) para el manejo de sesiones con JWT.
+* **Pagos:** Checkout integrado con el SDK de MercadoPago.
+* **Peticiones HTTP:** Axios con interceptores para inyección automática de tokens JWT.
 
-## React Compiler
+## 📁 Estructura de Carpetas
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+La arquitectura del frontend está diseñada para la escalabilidad y la reutilización de componentes:
 
-## Expanding the Oxlint configuration
-
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
-
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+```text
+frontend-ecommerce/
+├── 🗂️ public/                 # Assets estáticos y el archivo index.html.
+└── 🗂️ src/
+    ├── 🗂️ assets/             # Imágenes, iconos y recursos multimedia.
+    ├── 🗂️ components/         # Componentes UI reutilizables (Botones, Modales, Tarjetas).
+    ├── 🗂️ pages/              # Vistas principales (Home, Cart, Checkout, ProductDetails).
+    ├── 🗂️ services/           # Lógica de llamadas a la API (ProductService, OrderService).
+    ├── 🗂️ store/              # Estado global de la aplicación.
+    ├── 🗂️ hooks/              # Custom Hooks de React (ej. useAuth, useCart).
+    ├── 🗂️ types/              # Interfaces y tipos de TypeScript (ProductDTO, OrderDTO).
+    ├── 🗂️ config/             # Configuraciones globales (Axios, Keycloak, MercadoPago).
+    ├── 📄 App.tsx             # Componente raíz y configuración de Rutas.
+    └── 📄 main.tsx            # Punto de entrada de la aplicación.
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+## 🔐 Flujo de Autenticación y Compras
+1. **Login:** El usuario se autentica a través del servidor de Keycloak.
+2. **Navegación:** Se obtienen los productos a través del API Gateway (que se comunica con MongoDB).
+3. **Checkout:** Al finalizar, la orden se envía al backend. Debido a la arquitectura de microservicios (asíncrona), el frontend escucha el estado de la compra (Aprobada / Sin Stock) para darle feedback en tiempo real al usuario, culminando con la pasarela de MercadoPago.
