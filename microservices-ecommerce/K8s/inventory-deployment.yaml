@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: inventory-service
-          image: inventory-service:latest
+          image: inventory-service:security-20261023
           imagePullPolicy: Never
           ports:
             - containerPort: 8083

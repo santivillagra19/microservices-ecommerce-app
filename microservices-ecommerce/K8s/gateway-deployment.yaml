@@ -16,12 +16,12 @@ spec:
     spec:
       containers:
         - name: api-gateway
-          image: api-gateway:v5
+          image: api-gateway:security-20261023
           imagePullPolicy: Never
           ports:
             - containerPort: 9000
           env:
-                        - name: OAUTH2_CLIENT_SECRET
+            - name: OAUTH2_CLIENT_SECRET
               valueFrom:
                 secretKeyRef:
                   name: api-gateway-secret

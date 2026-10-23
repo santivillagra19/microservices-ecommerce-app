@@ -11,10 +11,12 @@ import { useCartStore } from '../store/cartStore';
 export const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const [isCompact, setIsCompact] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isMobileCategoriesOpen, setIsMobileCategoriesOpen] = useState(false);
+  const [isStoreMenuDismissed, setIsStoreMenuDismissed] = useState(false);
   const [products, setProducts] = useState<Product[]>([]);
   const [isAuthenticated, setIsAuthenticated] = useState(() => authService.isAuthenticated());
   const [isAdmin, setIsAdmin] = useState(() => authService.hasRole('ADMIN'));
@@ -36,7 +38,28 @@ export const Navbar = () => {
     setIsAuthenticated(authService.isAuthenticated());
     setIsAdmin(authService.hasRole('ADMIN'));
     setIsMobileMenuOpen(false);
+    setIsCompact(false);
   }, [location.pathname, location.search]);
+
+  useEffect(() => {
+    if (location.pathname !== '/') return;
+    let frame = 0;
+    const updateVisibility = () => {
+      frame = 0;
+      const currentY = Math.max(0, window.scrollY);
+      if (currentY > 96) setIsCompact(true);
+      else if (currentY < 24) setIsCompact(false);
+    };
+    updateVisibility();
+    const onScroll = () => {
+      if (!frame) frame = window.requestAnimationFrame(updateVisibility);
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      window.cancelAnimationFrame(frame);
+    };
+  }, [location.pathname]);
 
   // Escuchar cambios de almacenamiento
   useEffect(() => {
@@ -77,12 +100,12 @@ export const Navbar = () => {
       ).slice(0, 5);
 
   return (
-    <nav aria-label="Navegación principal" className="navbar w-full bg-[#18181b]/95 backdrop-blur-xl text-white border-b border-white/10 sticky top-0 z-50">
+    <nav data-compact={location.pathname === '/' && isCompact} aria-label="Navegación principal" className="navbar w-full bg-[#18181b]/95 backdrop-blur-xl text-white border-b border-white/10 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-wrap justify-between items-center gap-3 py-4 sm:gap-4">
+        <div className="navbar-row flex flex-wrap justify-between items-center gap-3 py-4 sm:gap-4">
 
           {/* Menú Izquierdo: Botón Hamburguesa en Mobile + Logo */}
-          <div className="mr-auto flex items-center gap-3 sm:gap-4 xl:gap-6">
+          <div className="navbar-leading mr-auto flex items-center gap-3 sm:gap-4 xl:gap-6">
             {/* Botón Hamburguesa visible en mobile (< md) */}
             <button
               type="button"
@@ -99,7 +122,7 @@ export const Navbar = () => {
             </button>
 
             {/* Logo */}
-            <Link to="/" aria-label="FerreStore, inicio" className="group/logo flex-shrink-0 flex items-center gap-2.5 rounded-lg focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#f26522]">
+            <Link to="/" aria-label="FerreStore, inicio" className="navbar-brand group/logo flex-shrink-0 flex items-center gap-2.5 rounded-lg focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#f26522]">
               <span className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/15 bg-white/5 transition-colors group-hover/logo:border-[#f26522]/60 group-hover/logo:bg-[#f26522]/10">
                 <Wrench className="h-5 w-5 text-[#f26522]" strokeWidth={1.5} />
               </span>
@@ -108,11 +131,11 @@ export const Navbar = () => {
 
             {/* Dropdown de Tienda/Categorías y Ofertas visible en desktop y tablet (>= md) */}
             <div className="hidden xl:flex items-center space-x-1 lg:space-x-2">
-              <div className="relative group z-40">
+              <div className="relative group z-40" onMouseEnter={() => setIsStoreMenuDismissed(false)} onFocusCapture={() => setIsStoreMenuDismissed(false)} onClick={() => setIsStoreMenuDismissed(true)}>
                 <NavLink to="/products" className="nav-item text-gray-400 hover:text-white px-3 py-2.5 rounded-lg text-sm font-medium flex items-center gap-2 transition-colors hover:bg-white/5">
                   <Package className="h-4 w-4"/> Tienda <ChevronDown className="h-3 w-3 ml-1" />
                 </NavLink>
-                <div className="absolute left-0 mt-0 w-56 bg-[#202023] border border-white/10 rounded-xl shadow-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible group-focus-within:opacity-100 group-focus-within:visible transition-all duration-200 transform translate-y-2 group-hover:translate-y-0 group-focus-within:translate-y-0 origin-top-left">
+                <div hidden={isStoreMenuDismissed} className="absolute left-0 mt-0 w-56 bg-[#202023] border border-white/10 rounded-xl shadow-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible group-focus-within:opacity-100 group-focus-within:visible transition-all duration-200 transform translate-y-2 group-hover:translate-y-0 group-focus-within:translate-y-0 origin-top-left">
                   <div className="py-1">
                     <Link to="/products" className="block px-5 py-3 text-xs font-black uppercase tracking-wider text-gray-300 hover:bg-white/5 hover:text-[#f26522] transition-colors border-l-2 border-transparent hover:border-[#f26522]">
                       VER TODO EL CATÁLOGO
@@ -147,7 +170,7 @@ export const Navbar = () => {
               </div>
 
               <NavLink to="/empresas" className="nav-item text-gray-400 hover:text-white px-3 py-2.5 rounded-lg text-sm font-medium flex items-center gap-2 transition-colors hover:bg-white/5">
-                <Briefcase className="h-4 w-4"/> Venta a Empresas
+                <Briefcase className="h-4 w-4"/> Venta mayorista
               </NavLink>
               <NavLink to="/contact" className="nav-item text-gray-400 hover:text-white px-3 py-2.5 rounded-lg text-sm font-medium flex items-center gap-2 transition-colors hover:bg-white/5">
                 <Phone className="h-4 w-4"/> Contacto
@@ -159,7 +182,7 @@ export const Navbar = () => {
           <div className="contents">
 
             {/* Barra de Búsqueda Fija */}
-            <div className="relative order-last w-full min-w-0 lg:order-none lg:flex-1 lg:basis-60 lg:max-w-sm">
+            <div className="navbar-search-wrapper relative order-last w-full min-w-0 lg:order-none lg:flex-1 lg:basis-60 lg:max-w-sm">
               <form role="search" onSubmit={handleSearch} className="relative z-50 w-full">
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                   <Search className="h-4 w-4 text-gray-300" strokeWidth={1.75} />
@@ -366,17 +389,17 @@ export const Navbar = () => {
               )}
             </div>
 
-            {/* Enlace Venta a Empresas */}
+            {/* Enlace Venta mayorista */}
             <Link
               to="/empresas"
               className="flex items-center justify-between px-3 py-3 rounded-lg text-base font-semibold text-white bg-white/[0.03] border border-gray-800 hover:border-[#f26522]/50 hover:text-[#f26522] transition-colors"
             >
               <div className="flex items-center gap-3">
                 <Briefcase className="h-5 w-5 text-[#f26522]" />
-                <span>Venta a Empresas</span>
+                <span>Venta mayorista</span>
               </div>
               <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-[#f26522]/20 text-[#f26522] border border-[#f26522]/40">
-                B2B
+                Mayorista
               </span>
             </Link>
 

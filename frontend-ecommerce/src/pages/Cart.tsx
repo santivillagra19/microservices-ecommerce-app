@@ -1,137 +1,82 @@
 import { Link } from 'react-router-dom';
 import { useCartStore } from '../store/cartStore';
-import { Trash2, Plus, Minus, ShoppingBag, ArrowLeft } from 'lucide-react';
-import { Button } from '../components/ui/Button';
+import { Trash2, Plus, Minus, ShoppingBag, ArrowLeft, ArrowRight, Truck } from 'lucide-react';
+
+const price = (value: number) => new Intl.NumberFormat('es-AR', {
+  style: 'currency', currency: 'ARS', minimumFractionDigits: 2,
+}).format(value);
 
 export const Cart = () => {
   const { items, removeItem, updateQuantity, clearCart, getTotalPrice } = useCartStore();
-
-  if (items.length === 0) {
-    return (
-      <div className="max-w-4xl mx-auto py-16 px-4 text-center">
-        <div className="bg-gray-50 rounded-full w-24 h-24 flex items-center justify-center mx-auto mb-6">
-          <ShoppingBag className="w-12 h-12 text-gray-400" />
-        </div>
-        <h2 className="text-3xl font-bold text-gray-900 mb-4">Tu carrito está vacío</h2>
-        <p className="text-gray-500 mb-8">Parece que aún no has agregado herramientas a tu carrito.</p>
-        <Link to="/products">
-          <Button variant="primary" icon={ArrowLeft}>
-            Volver a la tienda
-          </Button>
-        </Link>
-      </div>
-    );
-  }
+  const totalItems = items.reduce((total, item) => total + item.quantity, 0);
+  const total = getTotalPrice();
 
   return (
-    <div className="max-w-6xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
-      <h1 className="text-3xl font-bold text-gray-900 mb-8">Tu Carrito</h1>
-      
-      <div className="flex flex-col lg:flex-row gap-8">
-        {/* Lista de productos */}
-        <div className="flex-1 space-y-4">
-          {items.map((item) => (
-            <div key={item.product.id} className="flex flex-col sm:flex-row bg-white p-4 rounded-none border border-gray-100 shadow-sm gap-4 items-center relative">
-              <Link to={`/products/${item.product.id}`} className="w-24 h-24 bg-gray-50 rounded-none overflow-hidden border border-gray-100 flex-shrink-0 flex items-center justify-center">
-                {(item.product.imageUrls?.[0] || item.product.imageUrl) ? (
-                  <img src={item.product.imageUrls?.[0] || item.product.imageUrl} alt={item.product.name} className="w-full h-full object-contain p-2 hover:scale-110 transition-transform" />
-                ) : (
-                  <ShoppingBag className="w-8 h-8 text-gray-300" />
-                )}
-              </Link>
-              
-              <div className="flex-1 text-center sm:text-left w-full">
-                <Link to={`/products/${item.product.id}`}>
-                  <h3 className="font-bold text-lg text-gray-900 hover:text-[#f26522] transition-colors line-clamp-1">{item.product.name}</h3>
-                </Link>
-                <p className="text-gray-500 text-sm mb-3">${item.product.price.toFixed(2)} c/u</p>
-                <div className="flex items-center justify-center sm:justify-start gap-4">
-                  <div className="flex items-center border border-gray-200 rounded-none overflow-hidden">
-                    <button 
-                      onClick={() => updateQuantity(item.product.id, Math.max(1, item.quantity - 1))}
-                      className="p-2 bg-gray-50 hover:bg-gray-100 text-gray-600 transition-colors disabled:opacity-50"
-                      disabled={item.quantity <= 1}
-                    >
-                      <Minus className="w-4 h-4" />
-                    </button>
-                    <span className="w-12 text-center font-semibold text-gray-900">
-                      {item.quantity}
-                    </span>
-                    <button 
-                      onClick={() => updateQuantity(item.product.id, item.quantity + 1)}
-                      className="p-2 bg-gray-50 hover:bg-gray-100 text-gray-600 transition-colors"
-                    >
-                      <Plus className="w-4 h-4" />
-                    </button>
-                  </div>
-                  <button 
-                    onClick={() => removeItem(item.product.id)}
-                    className="text-red-500 hover:text-red-700 bg-red-50 hover:bg-red-100 transition-colors p-2 rounded-none"
-                    title="Eliminar producto"
-                  >
-                    <Trash2 className="w-5 h-5" />
-                  </button>
-                </div>
-              </div>
-
-              <div className="text-xl font-black text-gray-900 sm:w-32 text-center sm:text-right mt-2 sm:mt-0">
-                ${(item.product.price * item.quantity).toFixed(2)}
-              </div>
-            </div>
-          ))}
-          
-          <div className="flex justify-start pt-4">
-            <button 
-              onClick={clearCart}
-              className="text-red-500 hover:text-red-700 font-medium text-sm flex items-center gap-2 transition-colors px-4 py-2 rounded-none hover:bg-red-50"
-            >
-              <Trash2 className="w-4 h-4" />
-              Vaciar carrito completo
-            </button>
-          </div>
+    <div className="cart-page mx-auto max-w-6xl pb-5 pt-1 sm:pb-10 sm:pt-2">
+      <div className="mb-5 flex flex-wrap items-end justify-between gap-3 border-b border-gray-200 pb-4">
+        <div>
+          <h1 className="text-3xl font-semibold tracking-tight text-gray-900 sm:text-4xl">Tu carrito<span className="text-[#f26522]">.</span></h1>
+          {totalItems > 0 && <p className="mt-2 text-base text-gray-500">{totalItems} {totalItems === 1 ? 'producto listo' : 'productos listos'} para tu compra.</p>}
         </div>
-
-        {/* Resumen de la compra */}
-        <div className="w-full lg:w-96">
-          <div className="bg-white p-6 rounded-none border border-gray-100 shadow-sm sticky top-24">
-            <h2 className="text-xl font-bold text-gray-900 mb-6">Resumen del pedido</h2>
-            
-            <div className="space-y-4 text-gray-600 mb-6">
-              <div className="flex justify-between">
-                <span>Subtotal ({items.reduce((acc, i) => acc + i.quantity, 0)} productos)</span>
-                <span className="font-semibold text-gray-900">${getTotalPrice().toFixed(2)}</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Envío</span>
-                <span className="text-green-600 font-medium bg-green-50 px-2 py-0.5 rounded text-sm">Gratis</span>
-              </div>
-            </div>
-            
-            <div className="border-t border-gray-100 pt-4 mb-6">
-              <div className="flex justify-between items-center">
-                <span className="text-lg font-bold text-gray-900">Total</span>
-                <span className="text-2xl font-black text-[#f26522]">${getTotalPrice().toFixed(2)}</span>
-              </div>
-            </div>
-
-            <Link to="/checkout" className="w-full">
-              <Button 
-                variant="primary" 
-                className="w-full py-4 text-lg font-bold shadow-md hover:shadow-lg transition-all rounded-none flex justify-center items-center"
-              >
-                Proceder al pago
-              </Button>
-            </Link>
-            <div className="mt-4 text-center">
-              <Link to="/products" className="text-gray-500 hover:text-[#f26522] text-sm font-medium transition-colors">
-                Seguir comprando
-              </Link>
-            </div>
-          </div>
-        </div>
+        {items.length > 0 && <Link to="/products" className="inline-flex min-h-11 items-center gap-2 text-sm font-medium text-gray-600 transition-colors hover:text-[#f26522]"><ArrowLeft className="h-4 w-4" />Seguir comprando</Link>}
       </div>
+
+      {items.length === 0 ? (
+        <div className="rounded-2xl border border-gray-200 bg-white px-6 py-16 text-center sm:py-20">
+          <span className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-2xl border border-[#f26522]/20 bg-orange-50"><ShoppingBag className="h-9 w-9 text-[#f26522]" strokeWidth={1.5} /></span>
+          <h2 className="mb-3 text-2xl font-semibold tracking-tight text-gray-900">Tu carrito está vacío</h2>
+          <p className="mx-auto mb-8 max-w-sm text-base leading-relaxed text-gray-500">El próximo proyecto empieza con la herramienta indicada. Encontrala en nuestro catálogo.</p>
+          <Link to="/products" className="cart-primary inline-flex min-h-13 items-center justify-center gap-5 rounded-xl bg-[#f26522] px-6 py-3.5 text-base font-semibold text-white transition-colors hover:bg-[#df581b]">Ver catálogo<ArrowRight className="h-5 w-5" /></Link>
+        </div>
+      ) : (
+        <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_340px] xl:grid-cols-[minmax(0,1fr)_370px]">
+          <section aria-label="Productos en tu carrito" className="min-w-0">
+            <ul className="space-y-4">
+              {items.map(({ product, quantity }) => (
+                <li key={product.id} className="rounded-2xl border border-gray-200 bg-white p-4 sm:p-6">
+                  <div className="flex items-start gap-4 sm:gap-5">
+                    <Link to={`/products/${product.id}`} aria-label={`Ver ${product.name}`} className="flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-gray-200 bg-[#f5f5f4] sm:h-28 sm:w-28">
+                      {(product.imageUrls?.[0] || product.imageUrl) ? <img src={product.imageUrls?.[0] || product.imageUrl} alt={product.name} loading="lazy" className="h-full w-full object-contain p-3 transition-transform hover:scale-105 motion-reduce:transition-none" /> : <ShoppingBag className="h-8 w-8 text-gray-400" strokeWidth={1.5} />}
+                    </Link>
+                    <div className="min-w-0 flex-1">
+                      {product.brand && <p className="mb-1.5 text-xs font-medium uppercase tracking-wider text-gray-500">{product.brand}</p>}
+                      <Link to={`/products/${product.id}`} className="text-base font-semibold leading-snug tracking-tight text-gray-900 transition-colors hover:text-[#f26522] sm:text-lg">{product.name}</Link>
+                      <p className="mt-2 text-sm text-gray-500">{price(product.price)} <span className="text-gray-400">/ unidad</span></p>
+                    </div>
+                    <button type="button" onClick={() => removeItem(product.id)} aria-label={`Eliminar ${product.name} del carrito`} className="cart-icon shrink-0 text-gray-400 hover:bg-red-50 hover:text-red-600"><Trash2 className="h-4 w-4" strokeWidth={1.75} /></button>
+                  </div>
+                  <div className="mt-5 flex flex-wrap items-end justify-between gap-4 border-t border-gray-100 pt-4">
+                    <div>
+                      <p className="mb-2 text-xs font-medium text-gray-500">Cantidad</p>
+                      <div role="group" aria-label={`Cantidad de ${product.name}`} className="inline-flex items-center overflow-hidden rounded-xl border border-gray-300 bg-gray-50">
+                        <button type="button" onClick={() => updateQuantity(product.id, quantity - 1)} disabled={quantity <= 1} aria-label={`Reducir cantidad de ${product.name}`} className="cart-icon text-gray-700 hover:bg-gray-200 disabled:cursor-not-allowed disabled:text-gray-300"><Minus className="h-4 w-4" /></button>
+                        <span aria-live="polite" aria-atomic="true" className="min-w-10 px-2 text-center text-base font-semibold tabular-nums text-gray-900">{quantity}</span>
+                        <button type="button" onClick={() => updateQuantity(product.id, quantity + 1)} aria-label={`Aumentar cantidad de ${product.name}`} className="cart-icon text-gray-700 hover:bg-gray-200"><Plus className="h-4 w-4" /></button>
+                      </div>
+                    </div>
+                    <div className="min-w-0 text-right"><p className="mb-1 text-xs font-medium text-gray-500">Subtotal</p><p className="break-words text-xl font-semibold tracking-tight tabular-nums text-gray-900">{price(product.price * quantity)}</p></div>
+                  </div>
+                </li>
+              ))}
+            </ul>
+            <button type="button" onClick={clearCart} className="mt-4 inline-flex min-h-11 items-center gap-2 rounded-lg px-3 text-sm font-medium text-gray-500 transition-colors hover:bg-red-50 hover:text-red-600"><Trash2 className="h-4 w-4" />Vaciar carrito</button>
+          </section>
+
+          <aside aria-labelledby="cart-summary" className="overflow-hidden rounded-2xl border border-gray-300 bg-white shadow-[0_6px_24px_-8px_rgba(17,24,39,0.14)] lg:sticky lg:top-28">
+            <div className="border-b border-gray-200 bg-[#f0f0ee] px-6 py-5"><p className="mb-2 text-xs font-semibold uppercase tracking-[0.14em] text-[#c34b15]">Un paso más</p><h2 id="cart-summary" className="text-xl font-semibold tracking-tight text-gray-900">Resumen del pedido</h2></div>
+            <div className="p-6">
+              <dl className="space-y-4 text-base">
+                <div className="flex flex-wrap justify-between gap-2"><dt className="text-gray-600">Subtotal ({totalItems})</dt><dd className="font-medium tabular-nums text-gray-900">{price(total)}</dd></div>
+                <div className="flex justify-between gap-3"><dt className="text-gray-600">Envío</dt><dd className="rounded-md bg-green-50 px-2 py-0.5 text-sm font-medium text-green-700">Gratis</dd></div>
+                <div className="flex flex-wrap items-baseline justify-between gap-2 border-t border-gray-200 pt-5"><dt className="text-lg font-semibold text-gray-900">Total</dt><dd aria-live="polite" aria-atomic="true" className="text-2xl font-semibold tracking-tight tabular-nums text-gray-900">{price(total)}</dd></div>
+              </dl>
+              <Link to="/checkout" className="cart-primary mt-6 flex min-h-13 w-full items-center justify-between gap-3 rounded-xl bg-[#f26522] px-5 py-3.5 text-base font-semibold text-white transition-colors hover:bg-[#df581b]">Continuar al pago<ArrowRight className="h-5 w-5 shrink-0" /></Link>
+              <p className="mt-4 text-center text-sm leading-relaxed text-gray-500">Revisá tus datos y elegí cómo pagar en el siguiente paso.</p>
+              <div className="mt-6 flex items-center gap-3 border-t border-gray-100 pt-5 text-sm text-gray-600"><Truck className="h-5 w-5 shrink-0 text-[#f26522]" strokeWidth={1.5} /><span>De nuestro catálogo a tu próximo proyecto.</span></div>
+            </div>
+          </aside>
+        </div>
+      )}
     </div>
   );
 };
-
-

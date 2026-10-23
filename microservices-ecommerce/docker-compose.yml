@@ -47,7 +47,10 @@ services:
       - keycloak_data:/var/lib/postgresql/data
 
   keycloak:
-    image: quay.io/keycloak/keycloak:24.0.1
+    image: ferrestore-keycloak:26.8.1-java21.0.13
+    build:
+      context: .
+      dockerfile: docker/keycloak/Dockerfile
     container_name: keycloak
     command: start-dev
     environment:
@@ -56,8 +59,8 @@ services:
       KC_DB_USERNAME: keycloak
       KC_DB_PASSWORD: password
 
-      KEYCLOAK_ADMIN: admin
-      KEYCLOAK_ADMIN_PASSWORD: admin
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
     ports:
       - "8080:8080"
     depends_on:

@@ -1,0 +1,22 @@
+spring:
+  config:
+    import: ""
+  cloud:
+    config:
+      enabled: false
+    discovery:
+      enabled: false
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: http://localhost:1/unused-test-jwks
+eureka:
+  client:
+    enabled: false
+keycloak:
+  admin:
+    username: test-admin
+    password: test-only
+  url: http://localhost:1
+  realm: test

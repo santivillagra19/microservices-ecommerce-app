@@ -15,7 +15,15 @@ export default defineConfig(({ mode }) => {
         '/auth': {
           target: env.VITE_KEYCLOAK_URL || 'http://localhost:8080',
           changeOrigin: true,
-          rewrite: (path) => path.replace(/^\/auth/, '')
+          rewrite: (path) => path.replace(/^\/auth/, ''),
+          configure: (proxy) => {
+            proxy.on('proxyReq', (proxyReq, req) => {
+              // El login usa el mismo origen de Vite; Keycloak recibe una petición del proxy.
+              if (req.headers.origin === `http://${req.headers.host}` && req.url?.endsWith('/protocol/openid-connect/token')) {
+                proxyReq.removeHeader('origin');
+              }
+            });
+          }
         }
       }
     }

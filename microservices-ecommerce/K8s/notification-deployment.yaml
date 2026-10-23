@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: notification-service
-          image: notification-service:v2
+          image: notification-service:security-20261023
           imagePullPolicy: Never
           ports:
             - containerPort: 8084
@@ -48,6 +48,10 @@ spec:
             - name: SPRING_MAIL_PROPERTIES_MAIL_SMTP_AUTH
               value: "true"
             - name: SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE
+              value: "true"
+            - name: SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_REQUIRED
+              value: "true"
+            - name: SPRING_MAIL_PROPERTIES_MAIL_SMTP_SSL_CHECKSERVERIDENTITY
               value: "true"
 ---
 apiVersion: v1

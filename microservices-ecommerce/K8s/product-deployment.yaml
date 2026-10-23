@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: product-service
-          image: product-service:v24
+          image: product-service:security-20261023
           imagePullPolicy: Never
           ports:
             - containerPort: 8081
@@ -55,8 +55,21 @@ spec:
                 secretKeyRef:
                   name: cloudinary-secrets
                   key: CLOUDINARY_API_SECRET
-            - name: JAVA_TOOL_OPTIONS
-              value: "-Dspring.data.mongodb.uri=mongodb://root:$(MONGO_ROOT_PASSWORD)@mongodb:27017/product-db?authSource=admin -Dspring.data.mongodb.host=mongodb -Dspring.data.mongodb.port=27017 -Dspring.data.mongodb.database=product-db -Dspring.data.mongodb.username=root -Dspring.data.mongodb.password=$(MONGO_ROOT_PASSWORD) -Dspring.data.mongodb.authentication-database=admin"
+            - name: SPRING_DATA_MONGODB_HOST
+              value: mongodb
+            - name: SPRING_DATA_MONGODB_PORT
+              value: "27017"
+            - name: SPRING_DATA_MONGODB_DATABASE
+              value: product-db
+            - name: SPRING_DATA_MONGODB_USERNAME
+              value: root
+            - name: SPRING_DATA_MONGODB_AUTHENTICATION_DATABASE
+              value: admin
+            - name: SPRING_DATA_MONGODB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: databases-secret
+                  key: mongo-root-password
 ---
 apiVersion: v1
 kind: Service

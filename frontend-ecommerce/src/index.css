@@ -178,3 +178,230 @@ button, input, select, textarea {
     transform: none;
   }
 }
+
+.cart-page .cart-icon {
+  display: inline-flex;
+  min-width: 44px;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  transition: color 150ms, background-color 150ms;
+}
+
+.cart-page :is(a, button):focus-visible {
+  outline: 2px solid #f26522;
+  outline-offset: 3px;
+}
+
+.checkout-result a:focus-visible {
+  outline: 2px solid #f26522;
+  outline-offset: 3px;
+}
+
+.product-detail :is(a, button):focus-visible {
+  outline: 2px solid #f26522;
+  outline-offset: 3px;
+}
+
+.orders-page .orders-action {
+  min-height: 44px;
+  border-radius: 0.75rem;
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: normal;
+  text-transform: none;
+  transition: background-color 150ms, border-color 150ms, color 150ms, box-shadow 150ms;
+}
+
+.orders-page .orders-action-primary {
+  background: #f26522;
+  color: white;
+  box-shadow: 0 4px 12px -6px rgb(242 101 34 / 0.55);
+}
+
+.orders-page .orders-action-primary:hover:enabled {
+  background: #df581b;
+  box-shadow: 0 6px 16px -6px rgb(242 101 34 / 0.65);
+}
+
+.orders-page .orders-action-secondary {
+  border: 1px solid #d1d5db;
+  background: white;
+  color: #374151;
+}
+
+.orders-page .orders-action-secondary:hover:enabled {
+  border-color: rgb(242 101 34 / 0.55);
+  background: #fff7ed;
+  color: #c34b15;
+}
+
+.orders-page .orders-action:focus-visible {
+  outline: 2px solid #f26522;
+  outline-offset: 3px;
+}
+
+.admin-tabs {
+  display: flex;
+  gap: 0.375rem;
+  flex-wrap: wrap;
+  padding: 0.375rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 1rem;
+  background: white;
+  box-shadow: 0 6px 24px -8px rgb(17 24 39 / 0.12);
+}
+
+.admin-tab {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  gap: 0.625rem;
+  border: 1px solid transparent;
+  border-radius: 0.75rem;
+  padding: 0.75rem 1rem;
+  color: #6b7280;
+  font-size: 0.875rem;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: background-color 150ms, border-color 150ms, color 150ms;
+}
+
+.admin-tab:hover {
+  color: #c34b15;
+  background: #fff7ed;
+}
+
+.admin-tab-active {
+  border-color: rgb(242 101 34 / 0.25);
+  background: #fff7ed;
+  color: #c34b15;
+}
+
+.admin-tab:focus-visible,
+.admin-content :is(a, button):focus-visible {
+  outline: 2px solid #f26522;
+  outline-offset: 3px;
+}
+
+.admin-content .bg-white {
+  border-radius: 1rem;
+  border-color: #e5e7eb;
+  box-shadow: 0 6px 24px -8px rgb(17 24 39 / 0.12);
+}
+
+.admin-content table {
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.admin-content thead {
+  background: #f0f0ee;
+}
+
+.admin-content th {
+  color: #6b7280;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+}
+
+.admin-content tbody tr {
+  transition: background-color 150ms;
+}
+
+.admin-content tbody tr:hover {
+  background: #fffaf7;
+}
+
+.admin-content :is(input, textarea, select) {
+  border: 1.5px solid #d1d5db;
+  border-radius: 0.75rem;
+  background: #f9fafb;
+  color: #111827;
+  min-height: 48px;
+  box-shadow: none;
+}
+
+.admin-content textarea {
+  min-height: 112px;
+}
+
+.admin-content :is(input, textarea, select):focus {
+  border-color: #f26522;
+  background: white;
+  outline: 2px solid rgb(242 101 34 / 0.18);
+  outline-offset: 2px;
+}
+
+.admin-content button {
+  border-radius: 0.75rem;
+  font-weight: 600;
+  letter-spacing: normal;
+  text-transform: none;
+  transition: background-color 150ms, border-color 150ms, color 150ms, box-shadow 150ms;
+}
+
+.admin-content .bg-indigo-600 {
+  background: #f26522;
+}
+
+.admin-content .bg-indigo-600:hover {
+  background: #df581b;
+}
+
+.navbar .navbar-row {
+  transition: padding 220ms ease, gap 220ms ease;
+}
+
+.navbar[data-compact="true"] {
+  box-shadow: 0 4px 18px rgb(0 0 0 / 0.18);
+}
+
+.navbar[data-compact="true"] .navbar-row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
+@media (max-width: 1023px) {
+  .navbar[data-compact="true"] .navbar-row {
+    flex-wrap: nowrap;
+    gap: 8px;
+  }
+
+  .navbar[data-compact="true"] .navbar-leading {
+    margin-right: 0;
+    gap: 0;
+  }
+
+  .navbar[data-compact="true"] .navbar-brand {
+    display: none;
+  }
+
+  .navbar[data-compact="true"] .navbar-search-wrapper {
+    order: 0;
+    flex: 1;
+    width: auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .navbar .navbar-row {
+    transition: none;
+  }
+}
+
+.whatsapp-button {
+  right: max(1rem, env(safe-area-inset-right));
+  bottom: max(1rem, env(safe-area-inset-bottom));
+}
+
+@media (min-width: 640px) {
+  .whatsapp-button {
+    right: max(1.5rem, env(safe-area-inset-right));
+    bottom: max(1.5rem, env(safe-area-inset-bottom));
+  }
+}

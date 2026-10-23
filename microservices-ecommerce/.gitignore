@@ -1,3 +1,10 @@
 
 # K8s Secrets
 K8s/secrets-production.yaml
+
+# Local tools, build reports and database backups
+.tools/
+target/
+security/reports/
+security/backups/
+.agents/

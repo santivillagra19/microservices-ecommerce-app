@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: order-service
-          image: order-service:latest
+          image: order-service:mp-failure-20261023-v2
           imagePullPolicy: Never
           ports:
             - containerPort: 8082
@@ -38,6 +38,13 @@ spec:
                 secretKeyRef:
                   name: mercadopago-secret
                   key: access-token
+                  optional: true
+            # Webhooks stay disabled until the application's signature secret is configured.
+            - name: MERCADOPAGO_WEBHOOK_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: mercadopago-secret
+                  key: webhook-secret
                   optional: true
             - name: MANAGEMENT_OPENTELEMETRY_TRACING_EXPORT_OTLP_ENDPOINT
               value: "http://lgtm:4318/v1/traces"

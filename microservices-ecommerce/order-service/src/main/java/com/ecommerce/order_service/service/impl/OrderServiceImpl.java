@@ -9,7 +9,6 @@ import com.ecommerce.order_service.model.Order;
 import com.ecommerce.order_service.model.OrderLineItems;
 import com.ecommerce.order_service.model.OrderStatus;
 import com.mercadopago.MercadoPagoConfig;
-import com.mercadopago.client.preference.PreferenceClient;
 import com.mercadopago.client.preference.PreferenceItemRequest;
 import com.mercadopago.client.preference.PreferenceRequest;
 import com.mercadopago.client.preference.PreferenceBackUrlsRequest;
@@ -25,7 +24,9 @@ import org.springframework.amqp.AmqpException;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -73,30 +74,6 @@ public class OrderServiceImpl implements OrderService {
 
             log.info("Orden guardada con éxito. ID: {}", savedOrder.getId());
 
-            List<OrderPlacedEvent.OrderItemEvent> orderItems =
-                    order.getOrderLineItemsList().stream()
-                            .map((OrderLineItems item) -> new OrderPlacedEvent.OrderItemEvent(
-                                    item.getSku(), item.getPrice().toString(), item.getQuantity()
-                            )).toList();
-
-            OrderPlacedEvent event = new OrderPlacedEvent(
-                    savedOrder.getOrderNumber(), orderRequestDTO.getEmail(), orderItems
-            );
-
-            boolean sentToRabbit = false;
-        try {
-            rabbitTemplate.convertAndSend("order-events", "order.placed", event);
-            sentToRabbit = true;
-            log.info("Mensaje enviado a RabbitMQ: {}", savedOrder.getOrderNumber());
-
-        } catch (AmqpException e) {
-            log.error("RabbitMQ caído, El Outbox asegurará el envío posterior para la orden: {}", savedOrder.getOrderNumber());
-        }
-
-        outboxService.saveOrderPlacedEvent(event,sentToRabbit );
-
-            log.info("Evento enviado a RabbitMQ para la orden: {}", savedOrder.getOrderNumber());
-
             OrderResponseDTO responseDTO = orderMapper.toOrderResponse(savedOrder);
 
             if ("MERCADOPAGO".equalsIgnoreCase(orderRequestDTO.getPaymentMethod())) {
@@ -141,20 +118,41 @@ public class OrderServiceImpl implements OrderService {
 
                     Preference preference = mercadoPagoService.createPreference(preferenceRequest);
                     
-                    if (preference == null) {
-                        responseDTO.setPaymentUrl("http://localhost:5173/checkout/success?orderNumber=" + savedOrder.getOrderNumber());
-                    } else {
-                        responseDTO.setPaymentUrl(preference.getInitPoint());
+                    if (preference == null || preference.getInitPoint() == null || preference.getInitPoint().isBlank()) {
+                        throw new IllegalStateException("Mercado Pago no devolvio un enlace de pago");
                     }
-                } catch (com.mercadopago.exceptions.MPApiException apiException) {
-                    log.warn("MercadoPago API call failed (probably invalid test token or config). Error: {}", apiException.getApiResponse().getContent());
-                    responseDTO.setPaymentUrl("http://localhost:5173/checkout/success?orderNumber=" + savedOrder.getOrderNumber());
+                    responseDTO.setPaymentUrl(preference.getInitPoint());
                 } catch (Exception e) {
-                    log.warn("MercadoPago API call failed. Using mock redirect. Error: {}", e.getMessage());
-                    // Fallback para simular un pago exitoso en el frontend si falla el token
-                    responseDTO.setPaymentUrl("http://localhost:5173/checkout/success?orderNumber=" + savedOrder.getOrderNumber());
+                    log.error("No se pudo crear el enlace de pago de Mercado Pago para la orden {}", savedOrder.getOrderNumber(), e);
+                    throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE,
+                            "No se pudo iniciar el pago con Mercado Pago. Intente nuevamente.", e);
                 }
             }
+
+            List<OrderPlacedEvent.OrderItemEvent> orderItems =
+                    order.getOrderLineItemsList().stream()
+                            .map((OrderLineItems item) -> new OrderPlacedEvent.OrderItemEvent(
+                                    item.getSku(), item.getPrice().toString(), item.getQuantity()
+                            )).toList();
+
+            OrderPlacedEvent event = new OrderPlacedEvent(
+                    savedOrder.getOrderNumber(), orderRequestDTO.getEmail(), orderItems
+            );
+
+            boolean sentToRabbit = false;
+        try {
+            rabbitTemplate.convertAndSend("order-events", "order.placed", event);
+            sentToRabbit = true;
+            log.info("Mensaje enviado a RabbitMQ: {}", savedOrder.getOrderNumber());
+
+        } catch (AmqpException e) {
+            log.error("RabbitMQ caído, El Outbox asegurará el envío posterior para la orden: {}", savedOrder.getOrderNumber());
+        }
+
+        outboxService.saveOrderPlacedEvent(event,sentToRabbit );
+
+            log.info("Evento enviado a RabbitMQ para la orden: {}", savedOrder.getOrderNumber());
+
 
             return responseDTO;
     }

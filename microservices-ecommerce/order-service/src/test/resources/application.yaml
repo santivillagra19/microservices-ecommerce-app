@@ -1,0 +1,30 @@
+spring:
+  config:
+    import: ""
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: http://localhost:1/unused-test-jwks
+  cloud:
+    config:
+      enabled: false
+    discovery:
+      enabled: false
+  datasource:
+    url: jdbc:h2:mem:order-test;DB_CLOSE_DELAY=-1
+    username: sa
+    password: ""
+    driver-class-name: org.h2.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+  rabbitmq:
+    listener:
+      simple:
+        auto-startup: false
+eureka:
+  client:
+    enabled: false
+mercadopago:
+  access-token: TEST-dummy-token

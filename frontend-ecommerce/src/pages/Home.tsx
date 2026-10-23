@@ -10,13 +10,15 @@ import type { Banner, Category } from '../services/contentService';
 import { ProductCard } from '../components/ProductCard';
 import type { Product } from '../types';
 import { Button } from '../components/ui/Button';
+import { useCartStore } from '../store/cartStore';
 
 export const Home = () => {
+  const addItem = useCartStore((state) => state.addItem);
   const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
   const [banners, setBanners] = useState<Banner[]>(mockBanners);
   const [categories, setCategories] = useState<Category[]>(mockCategorías);
   const [loading, setLoading] = useState(true);
-  
+
   useEffect(() => {
     const fetchHomeData = async () => {
       try {
@@ -28,7 +30,7 @@ export const Home = () => {
         setFeaturedProducts(productsData.slice(0, 4));
         setBanners(bannersData);
         setCategories(categoriesData);
-      } catch (err) {
+      } catch {
       } finally {
         setLoading(false);
       }
@@ -37,56 +39,59 @@ export const Home = () => {
   }, []);
 
   const handleBuy = (product: Product) => {
+    addItem(product, 1);
     toast.success(`${product.name} agregado al carrito`, {
       description: 'Ve al carrito para finalizar la compra.',
     });
   };
 
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
       className="flex flex-col gap-0 pb-12 w-full max-w-none"
     >
-      
-      <HeroCarousel banners={banners} />
 
-      {/* Features Bar (Industrial style) */}
-      <section className="bg-black text-white w-full border-t-4 border-[#f26522]">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-gray-800">
-            <div className="flex items-center gap-4 p-6 justify-center md:justify-start">
-              <Truck className="h-10 w-10 text-[#f26522]" />
-              <div>
-                <h3 className="font-black uppercase tracking-wider text-sm">Envío a Obra</h3>
-                <p className="text-gray-400 text-xs mt-1">Entregas rápidas y seguras</p>
+      <div className="overflow-hidden rounded-2xl border border-zinc-700 bg-[#242426]">
+        <HeroCarousel banners={banners} />
+
+        {/* Features Bar (Industrial style) */}
+        <section className="w-full border-t border-white/10 bg-[#202022] text-white">
+          <div className="max-w-7xl mx-auto px-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-white/10">
+              <div className="flex items-center gap-4 p-6 justify-center md:justify-start">
+                <Truck className="h-7 w-7 shrink-0 text-[#f26522]" />
+                <div>
+                  <h3 className="text-base font-semibold tracking-tight">Envío a Obra</h3>
+                  <p className="mt-1 text-sm text-gray-400">Entregas rápidas y seguras</p>
+                </div>
               </div>
-            </div>
-            <div className="flex items-center gap-4 p-6 justify-center md:justify-start">
-              <Shield className="h-10 w-10 text-[#f26522]" />
-              <div>
-                <h3 className="font-black uppercase tracking-wider text-sm">Garantía Oficial</h3>
-                <p className="text-gray-400 text-xs mt-1">Respaldo directo de fábrica</p>
+              <div className="flex items-center gap-4 p-6 justify-center md:justify-start">
+                <Shield className="h-7 w-7 shrink-0 text-[#f26522]" />
+                <div>
+                  <h3 className="text-base font-semibold tracking-tight">Garantía Oficial</h3>
+                  <p className="mt-1 text-sm text-gray-400">Respaldo directo de fábrica</p>
+                </div>
               </div>
-            </div>
-            <div className="flex items-center gap-4 p-6 justify-center md:justify-start">
-              <Zap className="h-10 w-10 text-[#f26522]" />
-              <div>
-                <h3 className="font-black uppercase tracking-wider text-sm">Potencia Asegurada</h3>
-                <p className="text-gray-400 text-xs mt-1">Herramientas de alto rendimiento</p>
+              <div className="flex items-center gap-4 p-6 justify-center md:justify-start">
+                <Zap className="h-7 w-7 shrink-0 text-[#f26522]" />
+                <div>
+                  <h3 className="text-base font-semibold tracking-tight">Potencia Asegurada</h3>
+                  <p className="mt-1 text-sm text-gray-400">Herramientas de alto rendimiento</p>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+      </div>
 
       {/* Brands Marquee */}
       <section className="bg-white py-10 border-b-2 border-gray-100 overflow-hidden relative flex items-center">
         {/* Gradients to fade edges */}
         <div className="absolute left-0 top-0 bottom-0 w-16 sm:w-32 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none"></div>
         <div className="absolute right-0 top-0 bottom-0 w-16 sm:w-32 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none"></div>
-        
+
         <div className="flex w-max animate-marquee hover:[animation-play-state:paused]">
           {[...Array(2)].map((_, i) => (
             <div key={i} className="flex gap-16 sm:gap-24 items-center justify-center px-8 sm:px-12">
@@ -105,7 +110,7 @@ export const Home = () => {
 
       {/* Main Container para el resto del contenido */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full mt-16 space-y-20">
-        
+
         {/* Categorías Section */}
         <motion.section
           initial={{ opacity: 0, y: 40 }}
@@ -113,26 +118,40 @@ export const Home = () => {
           viewport={{ once: true, margin: "-50px" }}
           transition={{ duration: 0.6 }}
         >
-          <div className="text-center mb-10">
-            <h2 className="text-3xl font-black text-black uppercase tracking-tight">Categorías Principales</h2>
-            <div className="w-24 h-1 bg-[#f26522] mx-auto mt-4"></div>
+          <div className="mb-7 flex flex-wrap items-end justify-between gap-4 border-b border-gray-200 pb-5">
+            <div>
+              <p className="mb-3 flex items-center gap-2.5 text-xs font-semibold uppercase tracking-[0.16em] text-gray-500">
+                <span aria-hidden="true" className="flex gap-1"><span className="h-3 w-1 -skew-x-[25deg] bg-[#f26522]" /><span className="h-3 w-1 -skew-x-[25deg] bg-[#f26522]" /></span>
+                Para cada trabajo
+              </p>
+              <h2 className="text-2xl font-semibold tracking-tight text-gray-900 sm:text-3xl">Categorías principales</h2>
+            </div>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-            {categories.map((cat, idx) => (
-              <Link to={`/products?category=${cat.path}`} key={idx} className="group relative aspect-square bg-gray-900 overflow-hidden flex items-center justify-center border-2 border-transparent hover:border-[#f26522] transition-all">
-                <img src={cat.image} alt={cat.name} className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-110 group-hover:opacity-40 transition-all duration-700" />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent z-10"></div>
-                <span className="relative z-20 font-black uppercase tracking-wider text-center px-4 text-white group-hover:text-[#f26522] transition-colors py-2 text-sm sm:text-base">
-                  {cat.name}
-                </span>
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {categories.map((cat) => (
+              <Link to={`/products?category=${cat.path}`} key={cat.path} className="group overflow-hidden rounded-2xl border border-zinc-700 bg-[#242426] transition-[border-color,box-shadow] duration-300 hover:border-[#f26522]/70 hover:shadow-lg focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#f26522]">
+                <div className="relative aspect-[4/3] overflow-hidden bg-zinc-800">
+                  <img src={cat.image} alt="" loading="lazy" decoding="async" className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105 group-focus-visible:scale-105 motion-reduce:transition-none" />
+                  <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-t from-[#242426]/50 via-transparent to-transparent" />
+                  <span aria-hidden="true" className="absolute right-4 top-4 h-6 w-6 border-r-2 border-t-2 border-[#f26522]" />
+                </div>
+                <div className="flex items-center justify-between gap-4 border-t border-white/10 p-5 sm:p-6">
+                  <div className="min-w-0">
+                    <h3 className="text-lg font-semibold leading-snug tracking-tight text-white">{cat.name}</h3>
+                    <span className="mt-2 block text-sm text-gray-400 transition-colors group-hover:text-gray-200">Ver productos</span>
+                  </div>
+                  <span aria-hidden="true" className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-[#f26522]/35 bg-[#f26522]/10 text-orange-400 transition-colors group-hover:bg-[#f26522] group-hover:text-white group-focus-visible:bg-[#f26522] group-focus-visible:text-white">
+                    <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-0.5 motion-reduce:transition-none" strokeWidth={1.75} />
+                  </span>
+                </div>
               </Link>
             ))}
           </div>
         </motion.section>
 
         {/* Featured Products Section */}
-        <motion.section 
-          id="destacados" 
+        <motion.section
+          id="destacados"
           className="scroll-mt-24"
           initial={{ opacity: 0, y: 40 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -148,7 +167,7 @@ export const Home = () => {
               Ver Catálogo Completo <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
-          
+
           {loading ? (
             <div className="flex justify-center items-center h-48">
               <div className="animate-spin rounded-full h-10 w-10 border-b-4 border-[#f26522]"></div>
@@ -160,10 +179,10 @@ export const Home = () => {
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {featuredProducts.map((product) => (
-                <ProductCard 
-                  key={product.id} 
-                  product={product} 
-                  onBuy={handleBuy} 
+                <ProductCard
+                  key={product.id}
+                  product={product}
+                  onBuy={handleBuy}
                 />
               ))}
             </div>

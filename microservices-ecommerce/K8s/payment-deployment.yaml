@@ -16,10 +16,16 @@ spec:
     spec:
       containers:
         - name: payment-service
-          image: payment-service:latest
+          image: payment-service:security-20261023
           imagePullPolicy: Never
           ports:
             - containerPort: 8085
+          startupProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 8085
+            periodSeconds: 10
+            failureThreshold: 60
           livenessProbe:
             httpGet:
               path: /actuator/health/liveness

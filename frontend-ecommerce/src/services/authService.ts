@@ -32,8 +32,11 @@ export const authService = {
       return token;
     } catch (error: any) {
       if (error.response) {
-        if (error.response.status === 401) {
+        if (error.response.status === 401 || (error.response.status === 400 && error.response.data?.error === 'invalid_grant')) {
           throw new Error("Usuario y/o contraseña incorrectos");
+        }
+        if (error.response.status === 403) {
+          throw new Error("No pudimos iniciar sesión. Contactá a la tienda para recibir ayuda.");
         }
         if (error.response.status >= 500) {
           throw new Error("En este momento el servidor no está disponible");
@@ -104,6 +107,22 @@ export const authService = {
 
   isAuthenticated: () => {
     return !!authService.getToken();
+  },
+
+  getEmail: (): string => {
+    const token = authService.getToken();
+    if (!token) return '';
+
+    try {
+      const payload = token.replace(/^Bearer\s+/i, '').replace(/^"|"$/g, '').trim().split('.')[1];
+      const base64 = payload.replace(/-/g, '+').replace(/_/g, '/');
+      const bytes = Uint8Array.from(atob(base64.padEnd(Math.ceil(base64.length / 4) * 4, '=')), char => char.charCodeAt(0));
+      const claims = JSON.parse(new TextDecoder().decode(bytes));
+      if (typeof claims.exp === 'number' && claims.exp * 1000 <= Date.now()) return '';
+      return typeof claims.email === 'string' ? claims.email : '';
+    } catch {
+      return '';
+    }
   },
 
   hasRole: (role: string): boolean => {

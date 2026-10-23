@@ -8,13 +8,19 @@ import com.ecommerce.order_service.model.Order;
 import com.ecommerce.order_service.model.OrderStatus;
 import com.ecommerce.order_service.repository.OrderRepository;
 import com.ecommerce.order_service.service.impl.OrderServiceImpl;
+import com.mercadopago.resources.preference.Preference;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -40,6 +46,9 @@ class OrderServiceImplTest {
     @Mock
     private OutboxService outboxService;
 
+    @Mock
+    private MercadoPagoService mercadoPagoService;
+
     @InjectMocks
     private OrderServiceImpl orderService;
 
@@ -61,9 +70,11 @@ class OrderServiceImplTest {
 
         orderRequestDTO = new OrderRequestDTO(List.of(
                 new OrderLineItemsRequestDTO("LAPTOP-01", BigDecimal.valueOf(1000), 1)
-        ), "user@example.com");
+        ), "user@example.com", "Test User", "5551234", "Test address", "BANK_TRANSFER");
 
-        orderResponseDTO = new OrderResponseDTO(1L, "ORD-123", "user1", OrderStatus.PLACED.name(), List.of());
+        orderResponseDTO = OrderResponseDTO.builder()
+                .id(1L).orderNumber("ORD-123").orderStatus(OrderStatus.PLACED)
+                .email("user@example.com").orderLineItemsList(List.of()).build();
     }
 
     @Test
@@ -75,10 +86,70 @@ class OrderServiceImplTest {
         OrderResponseDTO result = orderService.placeOrder(orderRequestDTO, "user1");
 
         assertNotNull(result);
-        assertEquals("ORD-123", result.orderNumber());
+        assertEquals("ORD-123", result.getOrderNumber());
         verify(orderRepository, times(1)).save(order);
-        verify(rabbitTemplate, times(1)).convertAndSend(eq("order-events"), eq("order.placed"), any());
+        verify(rabbitTemplate, times(1)).convertAndSend(eq("order-events"), eq("order.placed"),
+                any(com.ecommerce.order_service.event.OrderPlacedEvent.class));
         verify(outboxService, times(1)).saveOrderPlacedEvent(any(), eq(true));
+    }
+
+    @Test
+    void placeOrder_WhenMercadoPagoFails_ShouldRejectWithoutPublishingOrder() throws Exception {
+        prepareMercadoPagoOrder();
+        when(mercadoPagoService.createPreference(any())).thenThrow(new RuntimeException("API unavailable"));
+
+        assertPaymentUnavailable();
+    }
+
+    @Test
+    void placeOrder_WhenCircuitBreakerReturnsNull_ShouldRejectWithoutPublishingOrder() throws Exception {
+        prepareMercadoPagoOrder();
+        when(mercadoPagoService.createPreference(any())).thenReturn(null);
+
+        assertPaymentUnavailable();
+    }
+
+    @ParameterizedTest
+    @NullAndEmptySource
+    @ValueSource(strings = " ")
+    void placeOrder_WhenPaymentUrlIsMissing_ShouldRejectWithoutPublishingOrder(String url) throws Exception {
+        prepareMercadoPagoOrder();
+        Preference preference = mock(Preference.class);
+        when(preference.getInitPoint()).thenReturn(url);
+        when(mercadoPagoService.createPreference(any())).thenReturn(preference);
+
+        assertPaymentUnavailable();
+    }
+
+    @Test
+    void placeOrder_WhenMercadoPagoSucceeds_ShouldReturnProviderUrl() throws Exception {
+        prepareMercadoPagoOrder();
+        Preference preference = mock(Preference.class);
+        when(preference.getInitPoint()).thenReturn("https://www.mercadopago.com.ar/checkout/test");
+        when(mercadoPagoService.createPreference(any())).thenReturn(preference);
+
+        OrderResponseDTO result = orderService.placeOrder(orderRequestDTO, "user1");
+
+        assertEquals(preference.getInitPoint(), result.getPaymentUrl());
+        verify(rabbitTemplate).convertAndSend(eq("order-events"), eq("order.placed"), any(com.ecommerce.order_service.event.OrderPlacedEvent.class));
+        verify(outboxService).saveOrderPlacedEvent(any(), eq(true));
+    }
+
+    private void prepareMercadoPagoOrder() {
+        orderRequestDTO.setPaymentMethod("MERCADOPAGO");
+        ReflectionTestUtils.setField(orderService, "mpAccessToken", "TEST-token");
+        when(orderMapper.toOrder(any(OrderRequestDTO.class))).thenReturn(order);
+        when(orderRepository.save(any(Order.class))).thenReturn(order);
+        when(orderMapper.toOrderResponse(any(Order.class))).thenReturn(orderResponseDTO);
+    }
+
+    private void assertPaymentUnavailable() {
+        ResponseStatusException error = assertThrows(ResponseStatusException.class,
+                () -> orderService.placeOrder(orderRequestDTO, "user1"));
+
+        assertEquals(HttpStatus.SERVICE_UNAVAILABLE, error.getStatusCode());
+        assertNull(orderResponseDTO.getPaymentUrl());
+        verifyNoInteractions(rabbitTemplate, outboxService);
     }
 
     @Test
@@ -89,7 +160,7 @@ class OrderServiceImplTest {
         OrderResponseDTO result = orderService.getOrderById(1L);
 
         assertNotNull(result);
-        assertEquals("ORD-123", result.orderNumber());
+        assertEquals("ORD-123", result.getOrderNumber());
         verify(orderRepository, times(1)).findById(1L);
     }
 }

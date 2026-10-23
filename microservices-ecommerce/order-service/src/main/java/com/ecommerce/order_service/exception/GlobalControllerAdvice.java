@@ -7,6 +7,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.net.URI;
 import java.time.Instant;
@@ -41,6 +42,11 @@ public class GlobalControllerAdvice {
                 errorMap.put(error.getField(), error.getDefaultMessage()));
         problemDetail.setProperty("errors", errorMap);
         return problemDetail;
+    }
+
+    @ExceptionHandler(ResponseStatusException.class)
+    public ProblemDetail handleResponseStatusException(ResponseStatusException ex) {
+        return ex.getBody();
     }
 
     @ExceptionHandler(Exception.class)

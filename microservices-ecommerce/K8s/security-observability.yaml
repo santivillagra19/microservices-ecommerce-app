@@ -3,6 +3,8 @@ kind: Deployment
 metadata:
   name: keycloak
 spec:
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       app: keycloak
@@ -13,8 +15,15 @@ spec:
     spec:
       containers:
         - name: keycloak
-          image: quay.io/keycloak/keycloak:24.0.1
+          image: ferrestore-keycloak:26.8.1-java21.0.13
+          imagePullPolicy: Never
           command: ["/opt/keycloak/bin/kc.sh", "start-dev", "--import-realm"]
+          resources:
+            requests:
+              memory: 256Mi
+              cpu: 100m
+            limits:
+              memory: 768Mi
           env:
             - name: KC_DB
               value: "postgres"
@@ -27,27 +36,41 @@ spec:
                 secretKeyRef:
                   name: databases-secret
                   key: postgres-keycloak-password
-            - name: KEYCLOAK_ADMIN
+            - name: KC_BOOTSTRAP_ADMIN_USERNAME
               valueFrom:
                 secretKeyRef:
                   name: keycloak-admin-secret
                   key: admin-username
-            - name: KEYCLOAK_ADMIN_PASSWORD
+            - name: KC_BOOTSTRAP_ADMIN_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: keycloak-admin-secret
                   key: admin-password
             - name: KC_HOSTNAME
-              value: "keycloak"
-            - name: KC_HOSTNAME_PORT
-              value: "8080"
+              value: "http://keycloak:8080"
             - name: KC_HOSTNAME_STRICT
               value: "false"
-            - name: KC_HOSTNAME_STRICT_BACKCHANNEL
-              value: "false"
+            - name: KC_HEALTH_ENABLED
+              value: "true"
+          startupProbe:
+            httpGet:
+              path: /health/started
+              port: 9000
+            periodSeconds: 10
+            failureThreshold: 60
+          readinessProbe:
+            httpGet:
+              path: /health/ready
+              port: 9000
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health/live
+              port: 9000
+            periodSeconds: 10
           volumeMounts:
             - name: realm-config
-              mountPath: /opt/keycloak/data/import/ecommerce-realm.json
+              mountPath: /opt/keycloak/data/import/ecommerce-realm-realm.json
               subPath: ecommerce-realm.json
       volumes:
         - name: realm-config

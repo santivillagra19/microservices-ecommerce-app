@@ -1,0 +1,19 @@
+spring:
+  config:
+    import: ""
+  cloud:
+    config:
+      enabled: false
+    discovery:
+      enabled: false
+  mail:
+    host: localhost
+    port: 1
+    username: test@example.invalid
+  rabbitmq:
+    listener:
+      simple:
+        auto-startup: false
+eureka:
+  client:
+    enabled: false

@@ -32,7 +32,7 @@ export const Empresas = () => {
         telefono: formData.phone,
         empresa: formData.companyName + ' (CUIT: ' + formData.cuit + ')',
         mensaje: formData.message,
-        tipoConsulta: 'Atención a Empresas / Presupuesto'
+        tipoConsulta: 'Venta mayorista / Presupuesto'
       });
       toast.success('Solicitud enviada correctamente', {
         description: 'Un asesor comercial se contactará a la brevedad.',
@@ -57,9 +57,9 @@ export const Empresas = () => {
   return (
     <div className="service-page mx-auto max-w-6xl py-5 sm:py-10">
       <div className="mb-9 max-w-3xl">
-        <p className="mb-4 flex items-center gap-2.5 text-xs font-semibold uppercase tracking-[0.18em] text-gray-500"><span aria-hidden="true" className="h-3 w-1 -skew-x-[25deg] bg-[#f26522]" />Empresas / FerreStore</p>
+        <p className="mb-4 flex items-center gap-2.5 text-xs font-semibold uppercase tracking-[0.18em] text-gray-500"><span aria-hidden="true" className="h-3 w-1 -skew-x-[25deg] bg-[#f26522]" />Venta mayorista / FerreStore</p>
         <h1 className="text-3xl font-semibold tracking-tight text-gray-900 sm:text-5xl">
-          Atención a Empresas
+          Venta mayorista
         </h1>
 
         <p className="mt-4 max-w-2xl text-lg leading-relaxed text-gray-600">
@@ -72,7 +72,7 @@ export const Empresas = () => {
         <div className="lg:col-span-2 space-y-8">
           <div className="rounded-2xl border border-gray-200 bg-[#f0f0ee] p-6 sm:p-8">
             <h3 className="mb-6 flex items-center gap-3 text-2xl font-semibold tracking-tight text-gray-900">
-              <Building2 className="text-[#f26522]" /> Beneficios B2B
+              <Building2 className="text-[#f26522]" /> Beneficios mayoristas
             </h3>
             <ul className="space-y-6">
               <li className="flex items-start gap-4 border-t border-gray-200 pt-5 first:border-t-0 first:pt-0">

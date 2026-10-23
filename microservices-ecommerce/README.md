@@ -76,39 +76,45 @@ Levanta tu cluster local de Kubernetes (recomendado usar el driver de Docker):
 minikube start --driver=docker
 ```
 
-**2. Compilar los microservicios y sus imágenes Docker**
-En la raíz del proyecto, debes compilar el código de cada servicio y construir la imagen Docker apuntando directamente al demonio de Minikube:
-```bash
-# Compilar los artefactos (.jar) saltando los tests para mayor rapidez
-mvn clean package -DskipTests -f api-gateway/pom.xml
-mvn clean package -DskipTests -f product-service/pom.xml
-mvn clean package -DskipTests -f order-service/pom.xml
-mvn clean package -DskipTests -f inventory-service/pom.xml
-mvn clean package -DskipTests -f payment-service/pom.xml
-mvn clean package -DskipTests -f notification-service/pom.xml
-
-# Construir las imágenes Docker dentro del entorno de Minikube
-minikube image build -t api-gateway:latest ./api-gateway
-minikube image build -t product-service:latest ./product-service
-minikube image build -t order-service:latest ./order-service
-minikube image build -t inventory-service:latest ./inventory-service
-minikube image build -t payment-service:latest ./payment-service
-minikube image build -t notification-service:latest ./notification-service
+**2. Verificar y construir con Java 21**
+El POM padre centraliza las versiones de los ocho módulos. Usar un JDK 21 parcheado (21.0.13 o posterior dentro de Java 21):
+```powershell
+$env:JAVA_HOME = "$env:LOCALAPPDATA\Programs\Java\jdk-21.0.13"
+$env:Path = "$env:JAVA_HOME\bin;$env:Path"
+powershell -ExecutionPolicy Bypass -File scripts/verify.ps1 -JavaHome "$env:JAVA_HOME"
+powershell -ExecutionPolicy Bypass -File scripts/scan.ps1
+powershell -ExecutionPolicy Bypass -File scripts/build-images.ps1
+powershell -ExecutionPolicy Bypass -File scripts/scan.ps1 -Images
 ```
+Todos los builds Docker usan el Dockerfile y el contexto raíz. Las etiquetas de esta actualización son `security-20261023`. Ver [la guía de seguridad](security/README.md) para informes, versiones y migración de Keycloak.
 
 **3. Configurar variables y secretos**
-Revisa el archivo `K8s/secrets-template.yaml`. Ahí se configuran las contraseñas de las bases de datos y credenciales.
-*Nota importante:* Asegúrate de colocar tu **Access Token de MercadoPago** (`mercadopago-access-token`) con credenciales válidas de prueba si deseas probar el flujo completo de pagos.
+Usar `K8s/templates/secrets-template.yaml` solo como referencia para crear secretos reales. Las plantillas están en una subcarpeta para impedir que `kubectl apply -f K8s/` sobrescriba credenciales existentes con valores de ejemplo.
+*Nota importante:* Asegúrate de colocar tu **Access Token de MercadoPago** (`mercadopago-secret/access-token`) con credenciales válidas de prueba si deseas probar el flujo completo de pagos.
 
-**4. Desplegar todo en Kubernetes**
+Para recibir confirmaciones, configurar `MERCADOPAGO_WEBHOOK_URL` con la URL HTTPS pública
+de `/api/v1/webhook/mercadopago` y agregar `webhook-secret` a `mercadopago-secret`.
+La clave de firma se obtiene en Webhooks de la aplicación de Mercado Pago y es distinta
+del Access Token. Sin esa clave, el endpoint devuelve 503; las firmas inválidas reciben 401.
+Solo se admiten Webhooks firmados con `data.id`, no notificaciones IPN sin firma.
+El correo necesita credenciales SMTP válidas en `email-secret`; el despliegue exige STARTTLS
+y verifica la identidad del servidor. HTTPS por sí solo no configura el envío de correos.
+
+**4. Desplegar en Kubernetes**
+En una instalación existente, migrar Keycloak siguiendo `security/README.md` (respaldo y ensayo en una base clonada). Los servicios verificados se actualizan con `powershell -ExecutionPolicy Bypass -File scripts/deploy-services.ps1`. No aplicar plantillas de secretos sobre una instalación existente.
+
+Para una instalación nueva:
 Crea el ConfigMap inicial de Keycloak y luego aplica todos los manifiestos:
 ```bash
 # 4.1 Cargar el realm preconfigurado de Keycloak
 kubectl create configmap keycloak-realm-config --from-file=ecommerce-realm.json
 
+minikube image load ferrestore-keycloak:26.8.1-java21.0.13
+
 # 4.2 Desplegar toda la infraestructura y microservicios
 kubectl apply -f K8s/
 ```
+Luego cargar las seis imágenes verificadas con `powershell -ExecutionPolicy Bypass -File scripts/deploy-services.ps1`.
 *(Nota: Es perfectamente normal que algunos microservicios se reinicien ("CrashLoopBackOff") durante los primeros minutos mientras las bases de datos y Keycloak terminan de inicializarse. Los mecanismos de tolerancia a fallos los reconectarán automáticamente).*
 
 **5. Exponer los servicios (Port-Forward)**

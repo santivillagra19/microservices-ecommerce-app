@@ -33,7 +33,10 @@ dist-ssr/
 Thumbs.db
 
 # Agent and temporary files
-.agents/
+.agents/*
+!.agents/skills/
+.agents/skills/*
+!.agents/skills/ponytail/
 *_output.txt
 admin_token.txt
 

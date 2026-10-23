@@ -88,7 +88,7 @@ class InventoryServiceImplTest {
         InventoryResponseDTO response = inventoryService.createInventory(inventoryRequest);
         
         assertNotNull(response);
-        assertEquals("LAPTOP-01", response.sku());
-        assertEquals(10, response.quantity());
+        assertEquals("LAPTOP-01", response.getSku());
+        assertEquals(10, response.getQuantity());
     }
 }

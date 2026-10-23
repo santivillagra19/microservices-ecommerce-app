@@ -33,7 +33,6 @@ class ProductServiceImplTest {
     @Mock
     private org.springframework.data.mongodb.core.MongoTemplate mongoTemplate;
 
-    @InjectMocks
     private ProductServiceImpl productService;
 
     private Product product;
@@ -42,6 +41,8 @@ class ProductServiceImplTest {
 
     @BeforeEach
     void setUp() {
+        productService = new ProductServiceImpl(productRepository, productMapper,
+                org.springframework.web.client.RestClient.builder(), mongoTemplate);
         product = Product.builder()
                 .id("1")
                 .name("Notebook")

@@ -1,0 +1,12 @@
+**
+!pom.xml
+!Dockerfile
+!*/
+!*/pom.xml
+!*/mvnw
+!*/.mvn/
+!*/.mvn/**
+!*/src/
+!*/src/**
+!*/target/
+!*/target/*-SNAPSHOT.jar

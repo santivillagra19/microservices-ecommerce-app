@@ -10,9 +10,20 @@
 }
 
 export interface Order {
-  id: string;
+  id: number;
   orderNumber: string;
-  skuCode: string;
+  orderStatus: string;
+  email?: string;
+  nombre?: string;
+  telefono?: string;
+  direccionEntrega?: string;
+  orderLineItemsList: OrderLineItem[];
+  paymentUrl?: string;
+}
+
+export interface OrderLineItem {
+  id: number;
+  sku: string;
   price: number;
   quantity: number;
 }
