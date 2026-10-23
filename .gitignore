@@ -34,6 +34,7 @@ Thumbs.db
 
 # Agent and temporary files
 .agents/
+AGENTS.md
 *_output.txt
 admin_token.txt
 
