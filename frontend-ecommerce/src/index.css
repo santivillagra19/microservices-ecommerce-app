@@ -1,7 +1,10 @@
 @import "tailwindcss";
 
 @theme {
-  --font-sans: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+
+  --font-weight-extrabold: 700;
+  --font-weight-black: 700;
 
   --color-primary-50: #f0fdf4;
   --color-primary-100: #dcfce7;
@@ -17,6 +20,7 @@
   font-family: var(--font-sans);
   line-height: 1.5;
   font-weight: 400;
+  font-synthesis: none;
 
   color-scheme: light;
   color: #1f2937; /* text-gray-800 */
@@ -32,6 +36,14 @@ html {
   scroll-behavior: smooth;
 }
 
+button, input, select, textarea {
+  font-family: inherit;
+}
+
+[data-sonner-toaster] {
+  font-family: var(--font-sans);
+}
+
 @keyframes marquee {
   0% { transform: translateX(0%); }
   100% { transform: translateX(-50%); }
@@ -43,4 +55,126 @@ html {
 
 .animate-marquee:hover {
   animation-play-state: paused;
+}
+
+/* Quiet active states and industrial accents shared with the catalog. */
+.navbar .nav-item[aria-current="page"] {
+  background: rgb(255 255 255 / 0.06);
+  color: #fff;
+  box-shadow: inset 0 -2px #f26522;
+}
+
+.navbar .navbar-login {
+  min-height: 40px;
+  border: 1px solid rgb(242 101 34 / 0.35);
+  border-radius: 12px;
+  padding: 0.625rem 0.875rem;
+  background: rgb(242 101 34 / 0.1);
+  color: #fb923c;
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+.navbar .navbar-login:hover {
+  background: #f26522;
+  color: white;
+}
+
+.navbar :is(a, button, input):focus-visible {
+  outline: 2px solid #f26522;
+  outline-offset: 3px;
+}
+
+.service-page .service-form label {
+  margin-bottom: 0.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  text-transform: none;
+  letter-spacing: normal;
+  color: #374151;
+}
+
+.service-page .service-form :is(input, textarea) {
+  border: 1.5px solid #9ca3af;
+  border-radius: 0.75rem;
+  background: #f9fafb;
+  color: #111827;
+  min-height: 52px;
+  line-height: 1.6;
+  box-shadow: none;
+  font-size: 1rem;
+}
+
+.service-page .service-form :is(input, textarea):focus {
+  outline: 2px solid rgb(242 101 34 / 0.2);
+  outline-offset: 2px;
+  border-color: #f26522;
+  background: white;
+}
+
+.service-page .service-submit {
+  min-height: 52px;
+  border-radius: 0.75rem;
+  font-size: 1rem;
+  font-weight: 600;
+  text-transform: none;
+  letter-spacing: normal;
+  background: #f26522;
+  color: white;
+}
+
+.service-page .service-submit:hover:enabled {
+  background: #df581b;
+}
+
+.service-page .service-submit:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+.service-page .service-submit:focus-visible {
+  outline: 2px solid #f26522;
+  outline-offset: 4px;
+}
+
+.service-page .service-form {
+  border-color: #d1d5db;
+  border-top: 3px solid #f26522;
+  box-shadow: 0 6px 24px -8px rgb(17 24 39 / 0.14);
+}
+
+.service-page .service-form :is(input, textarea)::placeholder {
+  color: #6b7280;
+  opacity: 1;
+}
+
+.service-page .service-form :is(input, textarea):hover:not(:focus) {
+  border-color: #6b7280;
+}
+
+.navbar-search::-webkit-search-cancel-button {
+  -webkit-appearance: none;
+}
+
+/* Crossfades keep the layout steady; photography moves subtly within its frame. */
+.hero-slide-image {
+  transform: scale(1.025);
+  transition: transform 7500ms cubic-bezier(0.2, 0.6, 0.3, 1);
+}
+
+.hero-slide[data-active="true"] .hero-slide-image {
+  transform: scale(1.09);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-slide-image {
+    transform: none;
+    transition: none;
+  }
+
+  .hero-slide[data-active="true"] .hero-slide-image {
+    transform: none;
+  }
 }

@@ -15,7 +15,7 @@ export const Empresas = () => {
     phone: '',
     message: ''
   });
-  
+
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
@@ -38,7 +38,7 @@ export const Empresas = () => {
         description: 'Un asesor comercial se contactará a la brevedad.',
       });
       setFormData({ companyName: '', cuit: '', contactName: '', email: '', phone: '', message: '' });
-    } catch (error) {
+    } catch {
       toast.error('Error al enviar solicitud', {
         description: 'Por favor, inténtelo de nuevo más tarde.',
       });
@@ -55,51 +55,52 @@ export const Empresas = () => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <div className="text-center mb-16">
-        <h1 className="text-3xl font-black text-black uppercase tracking-widest sm:text-4xl">
+    <div className="service-page mx-auto max-w-6xl py-5 sm:py-10">
+      <div className="mb-9 max-w-3xl">
+        <p className="mb-4 flex items-center gap-2.5 text-xs font-semibold uppercase tracking-[0.18em] text-gray-500"><span aria-hidden="true" className="h-3 w-1 -skew-x-[25deg] bg-[#f26522]" />Empresas / FerreStore</p>
+        <h1 className="text-3xl font-semibold tracking-tight text-gray-900 sm:text-5xl">
           Atención a Empresas
         </h1>
-        <div className="w-24 h-1 bg-[#f26522] mx-auto mt-4 mb-6"></div>
-        <p className="mt-4 text-lg text-gray-500 font-medium max-w-2xl mx-auto">
+
+        <p className="mt-4 max-w-2xl text-lg leading-relaxed text-gray-600">
           Equipamos tu industria o constructora con las mejores herramientas del mercado. Cotizaciones rápidas y precios mayoristas.
         </p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-5 gap-12">
+      <div className="grid grid-cols-1 items-start gap-5 lg:grid-cols-5 lg:gap-7">
         {/* Beneficios */}
         <div className="lg:col-span-2 space-y-8">
-          <div className="bg-gray-50 p-8 border-l-4 border-[#f26522]">
-            <h3 className="text-xl font-black uppercase mb-6 flex items-center gap-2">
+          <div className="rounded-2xl border border-gray-200 bg-[#f0f0ee] p-6 sm:p-8">
+            <h3 className="mb-6 flex items-center gap-3 text-2xl font-semibold tracking-tight text-gray-900">
               <Building2 className="text-[#f26522]" /> Beneficios B2B
             </h3>
             <ul className="space-y-6">
-              <li className="flex items-start gap-4">
+              <li className="flex items-start gap-4 border-t border-gray-200 pt-5 first:border-t-0 first:pt-0">
                 <ShieldCheck className="w-6 h-6 text-[#f26522] flex-shrink-0" />
                 <div>
-                  <h4 className="font-bold text-gray-900 uppercase tracking-wide">Descuentos por Volumen</h4>
-                  <p className="text-sm text-gray-600 mt-1">Accedé a listas de precios preferenciales para compras mayoristas y licitaciones.</p>
+                  <h4 className="text-lg font-semibold tracking-tight text-gray-900">Descuentos por Volumen</h4>
+                  <p className="text-base leading-relaxed text-gray-600 mt-2">Accedé a listas de precios preferenciales para compras mayoristas y licitaciones.</p>
                 </div>
               </li>
-              <li className="flex items-start gap-4">
+              <li className="flex items-start gap-4 border-t border-gray-200 pt-5 first:border-t-0 first:pt-0">
                 <FileText className="w-6 h-6 text-[#f26522] flex-shrink-0" />
                 <div>
-                  <h4 className="font-bold text-gray-900 uppercase tracking-wide">Facturación A</h4>
-                  <p className="text-sm text-gray-600 mt-1">Emitimos Factura A automatizada con todos los requisitos fiscales vigentes.</p>
+                  <h4 className="text-lg font-semibold tracking-tight text-gray-900">Facturación A</h4>
+                  <p className="text-base leading-relaxed text-gray-600 mt-2">Emitimos Factura A automatizada con todos los requisitos fiscales vigentes.</p>
                 </div>
               </li>
-              <li className="flex items-start gap-4">
+              <li className="flex items-start gap-4 border-t border-gray-200 pt-5 first:border-t-0 first:pt-0">
                 <Users className="w-6 h-6 text-[#f26522] flex-shrink-0" />
                 <div>
-                  <h4 className="font-bold text-gray-900 uppercase tracking-wide">Asesoramiento Técnico</h4>
-                  <p className="text-sm text-gray-600 mt-1">Un ejecutivo de cuentas especializado te ayudará a elegir el equipamiento ideal.</p>
+                  <h4 className="text-lg font-semibold tracking-tight text-gray-900">Asesoramiento Técnico</h4>
+                  <p className="text-base leading-relaxed text-gray-600 mt-2">Un ejecutivo de cuentas especializado te ayudará a elegir el equipamiento ideal.</p>
                 </div>
               </li>
-              <li className="flex items-start gap-4">
+              <li className="flex items-start gap-4 border-t border-gray-200 pt-5 first:border-t-0 first:pt-0">
                 <CheckCircle2 className="w-6 h-6 text-[#f26522] flex-shrink-0" />
                 <div>
-                  <h4 className="font-bold text-gray-900 uppercase tracking-wide">Garantía Extendida</h4>
-                  <p className="text-sm text-gray-600 mt-1">Servicio técnico prioritario para que tu obra o fábrica nunca se detenga.</p>
+                  <h4 className="text-lg font-semibold tracking-tight text-gray-900">Garantía Extendida</h4>
+                  <p className="text-base leading-relaxed text-gray-600 mt-2">Servicio técnico prioritario para que tu obra o fábrica nunca se detenga.</p>
                 </div>
               </li>
             </ul>
@@ -107,8 +108,9 @@ export const Empresas = () => {
         </div>
 
         {/* Formulario */}
-        <div className="lg:col-span-3 bg-white p-8 border-t-4 border-black shadow-2xl">
-          <h2 className="text-2xl font-black text-black uppercase tracking-wider mb-8">
+        <div className="service-form rounded-2xl border border-gray-200 bg-white p-6 sm:p-8 lg:col-span-3">
+          <p className="mb-2 text-xs font-semibold uppercase tracking-[0.16em] text-[#f26522]">Tu próximo proyecto</p>
+          <h2 className="mb-6 text-2xl font-semibold tracking-tight text-gray-900">
             Solicitar Presupuesto
           </h2>
           <form onSubmit={handleSubmit} className="space-y-6">
@@ -180,10 +182,10 @@ export const Empresas = () => {
               type="submit"
               variant="primary"
               disabled={isSubmitting}
-              className="w-full !py-4 text-base mt-2"
+              className="service-submit mt-2 w-full !py-3.5"
               icon={Send}
             >
-              {isSubmitting ? 'ENVIANDO SOLICITUD...' : 'ENVIAR SOLICITUD DE COTIZACIÓN'}
+              {isSubmitting ? 'Enviando solicitud...' : 'Solicitar cotización'}
             </Button>
           </form>
         </div>

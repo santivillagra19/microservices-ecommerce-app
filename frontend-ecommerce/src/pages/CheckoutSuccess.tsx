@@ -28,11 +28,11 @@ export const CheckoutSuccess = () => {
           <p className="text-sm text-gray-600">Por favor, transfiere el total a la siguiente cuenta:</p>
           <div>
             <p className="font-medium">CBU:</p>
-            <p className="font-mono bg-white p-2 border">0000000000000000000000</p>
+            <p className="font-sans tabular-nums bg-white p-2 border">0000000000000000000000</p>
           </div>
           <div>
             <p className="font-medium">Alias:</p>
-            <p className="font-mono bg-white p-2 border">FERRETERIA.TOOLS.OK</p>
+            <p className="font-sans tabular-nums bg-white p-2 border">FERRETERIA.TOOLS.OK</p>
           </div>
           <div>
             <p className="font-medium">Titular:</p>

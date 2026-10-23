@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Mail, Phone, MapPin, Send, Clock, AlertCircle } from 'lucide-react';
+import { Mail, Phone, MapPin, Send, Clock } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
 import { Textarea } from '../components/ui/Textarea';
@@ -13,7 +13,7 @@ export const Contact = () => {
     email: '',
     message: ''
   });
-  
+
   const [storeInfo, setStoreInfo] = useState<StoreInfo | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -23,7 +23,7 @@ export const Contact = () => {
       try {
         const info = await contentService.getStoreInfo();
         setStoreInfo(info);
-      } catch (err) {
+      } catch {
       }
     };
     fetchStoreInfo();
@@ -43,7 +43,7 @@ export const Contact = () => {
         description: 'Nos pondremos en contacto contigo a la brevedad.',
       });
       setFormData({ name: '', email: '', message: '' });
-    } catch (error) {
+    } catch {
       toast.error('Error al enviar el mensaje', {
         description: 'Por favor, inténtalo de nuevo más tarde.',
       });
@@ -60,61 +60,62 @@ export const Contact = () => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <div className="text-center mb-12">
-        <h1 className="text-3xl font-black text-black uppercase tracking-widest sm:text-4xl">
+    <div className="service-page mx-auto max-w-6xl py-5 sm:py-10">
+      <div className="mb-9 max-w-3xl">
+        <p className="mb-4 flex items-center gap-2.5 text-xs font-semibold uppercase tracking-[0.18em] text-gray-500"><span aria-hidden="true" className="h-3 w-1 -skew-x-[25deg] bg-[#f26522]" />Contacto / FerreStore</p>
+        <h1 className="text-3xl font-semibold tracking-tight text-gray-900 sm:text-5xl">
           Contáctanos
         </h1>
-        <div className="w-24 h-1 bg-[#f26522] mx-auto mt-4 mb-6"></div>
-        <p className="mt-4 text-lg text-gray-500 font-medium">
+
+        <p className="mt-4 text-lg leading-relaxed text-gray-600">
           ¿Tienes alguna duda o consulta? Estamos aquí para ayudarte.
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+      <div className="grid grid-cols-1 items-start gap-5 lg:grid-cols-5 lg:gap-7">
         {/* Contact Info */}
-        <div className="bg-gray-50 p-8 rounded-none border border-gray-200">
-          <h2 className="text-2xl font-black text-black uppercase tracking-wider mb-8">
+        <div className="rounded-2xl border border-gray-200 bg-[#f0f0ee] p-6 sm:p-8 lg:col-span-2">
+          <h2 className="mb-6 text-2xl font-semibold tracking-tight text-gray-900">
             Información de Contacto
           </h2>
-          
+
           <div className="space-y-6">
             <div className="flex items-start">
-              <div className="flex-shrink-0">
-                <MapPin className="h-6 w-6 text-[#f26522]" />
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-gray-200 bg-white">
+                <MapPin className="h-4 w-4 text-[#f26522]" />
               </div>
-              <div className="ml-3 text-gray-600">
-                <p className="font-bold text-gray-900 uppercase text-sm tracking-wider">Dirección</p>
+              <div className="ml-4 min-w-0 break-words text-base leading-relaxed text-gray-800">
+                <p className="text-sm font-semibold text-gray-600">Dirección</p>
                 <p className="mt-1">{storeInfo ? storeInfo.address : 'Cargando...'}</p>
               </div>
             </div>
 
             <div className="flex items-start">
-              <div className="flex-shrink-0">
-                <Phone className="h-6 w-6 text-[#f26522]" />
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-gray-200 bg-white">
+                <Phone className="h-4 w-4 text-[#f26522]" />
               </div>
-              <div className="ml-3 text-gray-600">
-                <p className="font-bold text-gray-900 uppercase text-sm tracking-wider">Teléfono</p>
+              <div className="ml-4 min-w-0 break-words text-base leading-relaxed text-gray-800">
+                <p className="text-sm font-semibold text-gray-600">Teléfono</p>
                 <p className="mt-1">{storeInfo ? storeInfo.phone : 'Cargando...'}</p>
               </div>
             </div>
 
             <div className="flex items-start">
-              <div className="flex-shrink-0">
-                <Mail className="h-6 w-6 text-[#f26522]" />
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-gray-200 bg-white">
+                <Mail className="h-4 w-4 text-[#f26522]" />
               </div>
-              <div className="ml-3 text-gray-600">
-                <p className="font-bold text-gray-900 uppercase text-sm tracking-wider">Email</p>
+              <div className="ml-4 min-w-0 break-words text-base leading-relaxed text-gray-800">
+                <p className="text-sm font-semibold text-gray-600">Email</p>
                 <p className="mt-1">{storeInfo ? storeInfo.email : 'Cargando...'}</p>
               </div>
             </div>
-            
+
             <div className="flex items-start">
-              <div className="flex-shrink-0">
-                <Clock className="h-6 w-6 text-[#f26522]" />
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-gray-200 bg-white">
+                <Clock className="h-4 w-4 text-[#f26522]" />
               </div>
-              <div className="ml-3 text-gray-600">
-                <p className="font-bold text-gray-900 uppercase text-sm tracking-wider">Horario de Atención</p>
+              <div className="ml-4 min-w-0 break-words text-base leading-relaxed text-gray-800">
+                <p className="text-sm font-semibold text-gray-600">Horario de Atención</p>
                 <p className="mt-1">{storeInfo ? storeInfo.schedule : 'Cargando...'}</p>
               </div>
             </div>
@@ -122,7 +123,8 @@ export const Contact = () => {
         </div>
 
         {/* Contact Form */}
-        <div className="bg-white p-8 rounded-none border-t-4 border-[#f26522] shadow-2xl">
+        <div className="service-form rounded-2xl border border-gray-200 bg-white p-6 sm:p-8 lg:col-span-3">
+          <div className="mb-6 border-b border-gray-100 pb-5"><p className="mb-2 text-xs font-semibold uppercase tracking-[0.16em] text-[#f26522]">Tu consulta</p><h2 className="text-2xl font-semibold tracking-tight text-gray-900">Contanos qué necesitás</h2></div>
           <form onSubmit={handleSubmit} className="space-y-6">
             <Input
               label="Nombre Completo"
@@ -160,10 +162,10 @@ export const Contact = () => {
                 type="submit"
                 variant="primary"
                 disabled={isSubmitting}
-                className="w-full !py-4"
+                className="service-submit w-full !py-3.5"
                 icon={Send}
               >
-                {isSubmitting ? 'ENVIANDO...' : 'ENVIAR MENSAJE'}
+                {isSubmitting ? 'Enviando...' : 'Enviar mensaje'}
               </Button>
             </div>
           </form>

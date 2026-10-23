@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { productService } from '../services/productService';
+import { inventoryService } from '../services/inventoryService';
 import type { Product } from '../types';
-import { PackageX, SearchX, Filter, SlidersHorizontal, ChevronDown } from 'lucide-react';
+import { PackageX, SearchX, Filter, SlidersHorizontal } from 'lucide-react';
 import { ProductCard } from '../components/ProductCard';
 import { useCartStore } from '../store/cartStore';
 import { Select } from '../components/ui/Select';
@@ -10,7 +12,10 @@ import { toast } from 'sonner';
 
 export const Products = () => {
   const [products, setProducts] = useState<Product[]>([]);
+  const [stockBySku, setStockBySku] = useState<Record<string, number> | null>(null);
   const [loading, setLoading] = useState(true);
+  const [hasLoaded, setHasLoaded] = useState(false);
+  const [resultsVersion, setResultsVersion] = useState(0);
   const [error, setError] = useState('');
   const [searchParams, setSearchParams] = useSearchParams();
   const addItem = useCartStore((state) => state.addItem);
@@ -27,6 +32,7 @@ export const Products = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       setLoading(true);
+      setError('');
       try {
         const filters = {
           ...(searchQuery && { search: searchQuery }),
@@ -35,12 +41,18 @@ export const Products = () => {
           ...(minPrice && { minPrice }),
           ...(maxPrice && { maxPrice })
         };
-        const data = await productService.getAll(filters);
+        const [data, inventory] = await Promise.all([
+          productService.getAll(filters),
+          inventoryService.getAll().catch(() => null),
+        ]);
+        setStockBySku(inventory === null ? null : Object.fromEntries(inventory.map(item => [item.sku, item.quantity])));
         setProducts(data);
-      } catch (err) {
+        setResultsVersion((version) => version + 1);
+      } catch {
         setError('Error al cargar los productos. El servicio podría estar inactivo.');
       } finally {
         setLoading(false);
+        setHasLoaded(true);
       }
     };
     
@@ -81,6 +93,11 @@ export const Products = () => {
   // Ordenamiento de productos (este se mantiene en cliente por ser sencillo)
   let sortedProducts = [...products];
   sortedProducts.sort((a, b) => {
+    if (stockBySku !== null) {
+      const aOutOfStock = (stockBySku[a.id] ?? 0) <= 0;
+      const bOutOfStock = (stockBySku[b.id] ?? 0) <= 0;
+      if (aOutOfStock !== bOutOfStock) return aOutOfStock ? 1 : -1;
+    }
     if (sortBy === 'price-asc') return a.price - b.price;
     if (sortBy === 'price-desc') return b.price - a.price;
     if (sortBy === 'name-asc') return a.name.localeCompare(b.name);
@@ -88,10 +105,10 @@ export const Products = () => {
     return 0;
   });
 
-  if (loading) {
+  if (loading && !hasLoaded) {
     return (
       <div className="flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#f26522]"></div>
       </div>
     );
   }
@@ -215,9 +232,9 @@ export const Products = () => {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1">
-        <div className="mb-6">
-          <h2 className="text-2xl font-bold text-gray-900">
+      <div className="min-w-0 flex-1">
+        <div className="mb-7 border-b border-gray-200 pb-5">
+          <h2 className="text-2xl font-semibold tracking-tight text-gray-900 sm:text-3xl">
             {searchQuery ? `Resultados para "${searchQuery}"` : 
              categoryQuery ? `Categoría: ${categoryQuery.charAt(0).toUpperCase() + categoryQuery.slice(1)}` : 
              brandQuery ? `Marca: ${brandQuery}` :
@@ -228,25 +245,34 @@ export const Products = () => {
           )}
         </div>
 
-        {sortedProducts.length === 0 ? (
-          <div className="text-center py-16 bg-white rounded-none border border-gray-100 flex flex-col items-center">
-            <SearchX className="h-16 w-16 text-gray-300 mb-4" />
-            <h3 className="text-lg font-bold text-gray-900 mb-2">No se encontraron productos</h3>
-            <p className="text-gray-500 max-w-md mx-auto">
-              No tenemos nada que coincida con tu búsqueda. Intenta con otros filtros o explora nuestro catálogo general.
-            </p>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {sortedProducts.map((product) => (
-              <ProductCard 
-                key={product.id} 
-                product={product} 
-                onBuy={handleBuy} 
-              />
-            ))}
-          </div>
-        )}
+        <motion.div
+          key={resultsVersion}
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: loading ? 0.45 : 1, y: 0 }}
+          transition={{ duration: 0.2, ease: 'easeOut' }}
+          className="relative"
+        >
+          {sortedProducts.length === 0 ? (
+            <div className="text-center py-16 bg-white rounded-none border border-gray-100 flex flex-col items-center">
+              <SearchX className="h-16 w-16 text-gray-300 mb-4" />
+              <h3 className="text-lg font-bold text-gray-900 mb-2">No se encontraron productos</h3>
+              <p className="text-gray-500 max-w-md mx-auto">
+                No tenemos nada que coincida con tu búsqueda. Intenta con otros filtros o explora nuestro catálogo general.
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {sortedProducts.map((product) => (
+                <ProductCard
+                  key={product.id}
+                  product={product}
+                  stock={stockBySku === null ? null : (stockBySku[product.id] ?? 0)}
+                  onBuy={handleBuy}
+                />
+              ))}
+            </div>
+          )}
+        </motion.div>
       </div>
     </div>
   );

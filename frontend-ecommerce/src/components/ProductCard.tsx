@@ -1,101 +1,74 @@
 import React, { useEffect, useState } from 'react';
-import { ShoppingBag, Image as ImageIcon } from 'lucide-react';
+import { ArrowUpRight, ShoppingBag, Image as ImageIcon } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import type { Product, Inventory } from '../types';
-import { Button } from './ui/Button';
+import type { Product } from '../types';
 import { inventoryService } from '../services/inventoryService';
 
 interface ProductCardProps {
   product: Product;
   onBuy?: (product: Product) => void;
+  stock?: number | null;
 }
 
-// Promesa compartida para evitar múltiples llamadas a la API al renderizar muchas tarjetas
-let inventoryPromise: Promise<Inventory[]> | null = null;
-
-export const ProductCard: React.FC<ProductCardProps> = React.memo(({ product, onBuy }) => {
-  const [stock, setStock] = useState<number | null>(null);
+export const ProductCard: React.FC<ProductCardProps> = React.memo(({ product, onBuy, stock: suppliedStock }) => {
+  const [fetchedStock, setFetchedStock] = useState<number | null>(null);
 
   useEffect(() => {
-    if (!inventoryPromise) {
-      inventoryPromise = inventoryService.getAll();
-    }
-    inventoryPromise.then(data => {
-      const item = data.find(i => i.sku === product.id);
-      // Asumimos que si no está en el inventario, el stock es 0
-      setStock(item ? item.quantity : 0);
+    if (suppliedStock !== undefined) return;
+    let active = true;
+    inventoryService.getAll().then(data => {
+      if (active) setFetchedStock(data.find(item => item.sku === product.id)?.quantity ?? 0);
     }).catch(() => {
-      // En caso de error, podríamos asumir que hay stock para no bloquear la compra, o 0.
-      setStock(1); 
+      if (active) setFetchedStock(null);
     });
-  }, [product.id]);
+    return () => { active = false; };
+  }, [product.id, suppliedStock]);
 
-  const isOutOfStock = stock === 0;
+  const stock = suppliedStock === undefined ? fetchedStock : suppliedStock;
+  const isOutOfStock = stock !== null && stock <= 0;
+  const canBuy = stock !== null && stock > 0;
+  const image = product.imageUrls?.[0] || product.imageUrl;
 
   return (
-    <div className={`group bg-white border border-gray-100 rounded-none overflow-hidden transition-all duration-300 flex flex-col h-full ${isOutOfStock ? 'opacity-70 grayscale' : 'hover:shadow-xl hover:-translate-y-1'}`}>
-      {/* Contenedor de la imagen */}
-      <Link 
-        to={isOutOfStock ? '#' : `/products/${product.id}`} 
-        className={`relative w-full aspect-[4/3] bg-gray-50 overflow-hidden border-b border-gray-100 block ${isOutOfStock ? 'cursor-not-allowed' : ''}`}
-        onClick={(e) => isOutOfStock && e.preventDefault()}
-      >
-        {(product.imageUrls?.[0] || product.imageUrl) ? (
-          <img 
-            src={product.imageUrls?.[0] || product.imageUrl} 
-            alt={product.name} 
-            className={`w-full h-full object-contain p-2 transition-transform duration-500 ease-out ${!isOutOfStock && 'group-hover:scale-105'}`}
-            loading="lazy"
-          />
+    <article className="group flex h-full min-w-0 flex-col overflow-hidden rounded-2xl border border-gray-200/80 bg-white transition-[border-color,box-shadow] duration-300 hover:border-gray-300 hover:shadow-[0_12px_32px_-20px_rgba(0,0,0,0.25)]">
+      <Link to={`/products/${product.id}`} className="relative block aspect-[4/3] overflow-hidden bg-[#f5f5f4] focus-visible:outline-2 focus-visible:outline-offset-[-4px] focus-visible:outline-[#f26522]" aria-label={`Ver ${product.name}`}>
+        {image ? (
+          <img src={image} alt={product.name} loading="lazy" className={`h-full w-full object-contain p-7 transition-transform duration-500 motion-reduce:transition-none ${isOutOfStock ? 'opacity-60 grayscale' : 'group-hover:scale-105 group-focus-within:scale-105'}`} />
         ) : (
-          <div className="w-full h-full flex flex-col items-center justify-center text-gray-400">
-            <ImageIcon className="w-12 h-12 mb-2 opacity-50" />
-            <span className="text-xs font-medium uppercase tracking-wider opacity-70">Sin imagen</span>
+          <div className="flex h-full flex-col items-center justify-center gap-2 text-gray-400">
+            <ImageIcon className="h-10 w-10" strokeWidth={1} />
+            <span className="text-xs">Sin imagen</span>
           </div>
         )}
-        
-        {/* Etiqueta de Sin Stock */}
         {isOutOfStock && (
-          <div className="absolute inset-0 bg-black/10 flex items-center justify-center">
-            <span className="bg-red-600 text-white font-bold px-4 py-2 uppercase tracking-widest text-sm transform -rotate-12 shadow-lg">
-              Sin stock
+          <span className="absolute left-0 top-5 inline-flex items-center gap-2.5 rounded-r-sm border border-l-0 border-gray-300/70 bg-[#e7e7e5]/95 py-2 pl-4 pr-3.5 text-[10px] font-semibold uppercase tracking-[0.16em] text-gray-600">
+            <span className="flex items-center gap-[3px]" aria-hidden="true">
+              <span className="h-3 w-px -skew-x-[25deg] bg-gray-400" />
+              <span className="h-3 w-px -skew-x-[25deg] bg-gray-400" />
             </span>
-          </div>
-        )}
-      </Link>
-
-      <div className="p-5 flex flex-col flex-grow">
-        <Link 
-          to={isOutOfStock ? '#' : `/products/${product.id}`}
-          onClick={(e) => isOutOfStock && e.preventDefault()}
-          className={isOutOfStock ? 'cursor-not-allowed' : ''}
-        >
-          <h3 className={`text-lg font-bold line-clamp-1 mb-2 transition-colors ${isOutOfStock ? 'text-gray-500' : 'text-gray-800 group-hover:text-[#f26522]'}`}>
-            {product.name}
-          </h3>
-        </Link>
-        
-        <p className="text-gray-500 text-sm mb-5 line-clamp-2 leading-relaxed flex-grow">
-          {product.description}
-        </p>
-        
-        <div className="flex justify-between items-center mt-auto pt-4 border-t border-gray-100">
-          <span className={`text-2xl font-black tracking-tight ${isOutOfStock ? 'text-gray-400' : 'text-gray-900'}`}>
-            ${product.price.toFixed(2)}
+            Sin stock
           </span>
-          <Button 
-            variant="primary" 
-            icon={ShoppingBag} 
-            onClick={() => !isOutOfStock && onBuy && onBuy(product)}
-            disabled={isOutOfStock}
-            className={`rounded-none px-5 py-2 transition-all ${isOutOfStock ? 'bg-gray-400 cursor-not-allowed opacity-50' : 'bg-gray-900 hover:bg-gray-800 shadow-md hover:shadow-lg'}`}
-          >
-            {isOutOfStock ? 'Agotado' : 'Comprar'}
-          </Button>
+        )}
+        <span className="absolute bottom-3 right-3 flex h-8 w-8 items-center justify-center rounded-full border border-gray-200 bg-white/90 text-gray-500 transition-colors group-hover:text-gray-900" aria-hidden="true">
+          <ArrowUpRight className="h-4 w-4" strokeWidth={1.5} />
+        </span>
+      </Link>
+      <div className="flex flex-1 flex-col p-5">
+        <p className="mb-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-gray-400">{product.brand || 'Herramientas'}</p>
+        <Link to={`/products/${product.id}`} className="rounded-sm focus-visible:outline-2 focus-visible:outline-[#f26522]">
+          <h3 className="line-clamp-2 min-h-12 text-base font-semibold leading-6 tracking-tight text-gray-900 transition-colors hover:text-[#f26522]">{product.name}</h3>
+        </Link>
+        <p className="mb-5 mt-2 line-clamp-2 text-sm leading-relaxed text-gray-500">{product.description}</p>
+        <div className="mt-auto border-t border-gray-100 pt-4">
+          <p className={`mb-4 text-2xl font-semibold tracking-tight tabular-nums ${isOutOfStock ? 'text-gray-400' : 'text-gray-900'}`}>
+            <span className="mr-1 text-base font-normal">$</span>{product.price.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+          </p>
+          <button type="button" onClick={() => canBuy && onBuy?.(product)} disabled={!canBuy} aria-label={canBuy ? `Comprar ${product.name}` : `${product.name}: ${isOutOfStock ? 'sin stock' : 'stock no disponible'}`} className="flex min-h-11 w-full items-center justify-center gap-2 rounded-lg bg-gray-900 px-4 py-3 text-sm font-medium text-white transition-colors enabled:hover:bg-[#f26522] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f26522] disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-400">
+            <ShoppingBag className="h-4 w-4" strokeWidth={1.5} />
+            {isOutOfStock ? 'Sin stock' : canBuy ? 'Comprar' : 'Stock no disponible'}
+          </button>
         </div>
       </div>
-    </div>
+    </article>
   );
 });
-
-

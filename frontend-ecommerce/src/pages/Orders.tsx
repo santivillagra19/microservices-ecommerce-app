@@ -195,7 +195,7 @@ export const Orders = () => {
                   </div>
                   <div className="text-right">
                     <p className="text-xs font-bold text-gray-500 uppercase tracking-wider">Nº de Pedido</p>
-                    <p className="font-mono font-bold text-gray-900 mt-1">{order.id}</p>
+                    <p className="font-sans tabular-nums font-bold text-gray-900 mt-1">{order.id}</p>
                   </div>
                 </div>
 
@@ -211,7 +211,7 @@ export const Orders = () => {
                   {order.trackingNumber && (
                     <p className="text-sm text-gray-600 flex items-center gap-1 mt-2">
                       <MapPin className="w-4 h-4 text-gray-400" />
-                      Código de seguimiento: <span className="font-mono font-bold text-[#f26522]">{order.trackingNumber}</span>
+                      Código de seguimiento: <span className="font-sans tabular-nums font-bold text-[#f26522]">{order.trackingNumber}</span>
                     </p>
                   )}
                   {order.estimatedDelivery && order.status !== 'DELIVERED' && (

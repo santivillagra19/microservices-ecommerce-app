@@ -1,8 +1,7 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Zap, Shield, Truck, ChevronLeft, ChevronRight } from 'lucide-react';
-import useEmblaCarousel from 'embla-carousel-react';
-import Autoplay from 'embla-carousel-autoplay';
+import { ArrowRight, Mail, Zap, Shield, Truck } from 'lucide-react';
+import { HeroCarousel } from '../components/HeroCarousel';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 import { productService } from '../services/productService';
@@ -18,17 +17,6 @@ export const Home = () => {
   const [categories, setCategories] = useState<Category[]>(mockCategorías);
   const [loading, setLoading] = useState(true);
   
-  // Embla Carousel setup
-  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true }, [Autoplay({ delay: 5000, stopOnInteraction: false })]);
-
-  const scrollPrev = useCallback(() => {
-    if (emblaApi) emblaApi.scrollPrev();
-  }, [emblaApi]);
-
-  const scrollNext = useCallback(() => {
-    if (emblaApi) emblaApi.scrollNext();
-  }, [emblaApi]);
-
   useEffect(() => {
     const fetchHomeData = async () => {
       try {
@@ -62,67 +50,7 @@ export const Home = () => {
       className="flex flex-col gap-0 pb-12 w-full max-w-none"
     >
       
-      {/* Hero Carousel Section with Embla */}
-      <section className="relative w-full h-[60vh] min-h-[400px] max-h-[600px] bg-black overflow-hidden group">
-        <div className="overflow-hidden w-full h-full" ref={emblaRef}>
-          <div className="flex h-full">
-            {banners.map((banner, index) => (
-              <div key={banner.id} className="flex-[0_0_100%] min-w-0 relative h-full">
-                <div className="absolute inset-0 bg-black/40 z-10"></div>
-                <img 
-                  src={banner.image} 
-                  alt={banner.title}
-                  loading={index === 0 ? "eager" : "lazy"}
-                  fetchPriority={index === 0 ? "high" : "auto"}
-                  decoding="async"
-                  className="w-full h-full object-cover opacity-80"
-                />
-                <div className="absolute inset-0 z-20 flex flex-col justify-center items-center text-center px-4">
-                  <motion.h2 
-                    initial={{ y: 20, opacity: 0 }}
-                    whileInView={{ y: 0, opacity: 1 }}
-                    transition={{ delay: 0.2 }}
-                    className="text-[#f26522] font-black text-sm sm:text-lg md:text-xl tracking-[0.2em] mb-4 uppercase"
-                  >
-                    {banner.subtitle}
-                  </motion.h2>
-                  <motion.h1 
-                    initial={{ y: 20, opacity: 0 }}
-                    whileInView={{ y: 0, opacity: 1 }}
-                    transition={{ delay: 0.3 }}
-                    className="text-white font-extrabold text-4xl sm:text-6xl md:text-7xl uppercase tracking-tighter mb-8 max-w-4xl drop-shadow-lg"
-                  >
-                    {banner.title}
-                  </motion.h1>
-                  <motion.div
-                    initial={{ scale: 0.9, opacity: 0 }}
-                    whileInView={{ scale: 1, opacity: 1 }}
-                    transition={{ delay: 0.4 }}
-                  >
-                    <Link to="/products" className="bg-[#f26522] hover:bg-[#d95316] text-white px-10 py-4 text-lg font-black uppercase tracking-widest rounded-none transition-colors border-2 border-[#f26522] hover:border-[#d95316]">
-                      Ver Catálogo
-                    </Link>
-                  </motion.div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Carousel Controls */}
-        <button 
-          onClick={scrollPrev}
-          className="absolute left-4 top-1/2 -translate-y-1/2 z-30 bg-black/50 hover:bg-[#f26522] text-white p-3 transition-colors opacity-0 group-hover:opacity-100 hidden sm:block"
-        >
-          <ChevronLeft className="w-8 h-8" />
-        </button>
-        <button 
-          onClick={scrollNext}
-          className="absolute right-4 top-1/2 -translate-y-1/2 z-30 bg-black/50 hover:bg-[#f26522] text-white p-3 transition-colors opacity-0 group-hover:opacity-100 hidden sm:block"
-        >
-          <ChevronRight className="w-8 h-8" />
-        </button>
-      </section>
+      <HeroCarousel banners={banners} />
 
       {/* Features Bar (Industrial style) */}
       <section className="bg-black text-white w-full border-t-4 border-[#f26522]">
@@ -248,26 +176,38 @@ export const Home = () => {
         </motion.section>
 
         {/* Newsletter Section */}
-        <motion.section 
-          className="bg-black text-white p-8 md:p-16 border-t-4 border-[#f26522] relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-8"
-          initial={{ opacity: 0, scale: 0.95 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: true, margin: "-50px" }}
-          transition={{ duration: 0.6 }}
+        <motion.section
+          aria-labelledby="newsletter-title"
+          className="relative flex flex-col justify-between gap-8 overflow-hidden rounded-2xl border border-gray-200 bg-[#f0f0ee] p-6 text-gray-900 sm:p-10 lg:flex-row lg:items-center lg:p-12"
+          initial={{ opacity: 0, y: 12 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-50px' }}
+          transition={{ duration: 0.4 }}
         >
-          <div className="relative z-10 text-center md:text-left max-w-xl">
-            <h2 className="text-3xl font-black uppercase tracking-tight mb-2">Sé el primero en enterarte</h2>
-            <p className="text-gray-400">Suscríbete a nuestro boletín para recibir novedades, lanzamientos y ofertas exclusivas para profesionales.</p>
+          <div className="max-w-lg">
+            <div className="mb-5 flex items-center gap-3">
+              <span className="flex h-10 w-10 items-center justify-center rounded-xl border border-gray-200 bg-white">
+                <Mail className="h-5 w-5 text-[#f26522]" strokeWidth={1.5} />
+              </span>
+              <span className="text-[10px] font-medium uppercase tracking-[0.2em] text-gray-500">Novedades FerreStore</span>
+            </div>
+            <h2 id="newsletter-title" className="mb-3 text-2xl font-semibold tracking-tight sm:text-3xl">Sé el primero en enterarte</h2>
+            <p className="text-sm leading-relaxed text-gray-500">Lanzamientos, novedades y ofertas para tu próximo proyecto. Directo a tu correo.</p>
           </div>
-          <div className="relative z-10 w-full max-w-md flex flex-col sm:flex-row gap-0">
-            <input 
-              type="email" 
-              placeholder="Tu correo electrónico" 
-              className="flex-grow px-5 py-4 bg-white text-black font-medium focus:outline-none focus:ring-2 focus:ring-[#f26522] rounded-none"
-            />
-            <Button variant="primary" className="!bg-[#f26522] hover:!bg-[#d95316] !text-white rounded-none px-8 py-4 font-black uppercase tracking-widest">
-              Suscribirme
-            </Button>
+          <div className="w-full max-w-md">
+            <label htmlFor="newsletter-email" className="mb-2 block text-xs font-medium text-gray-600">Tu correo electrónico</label>
+            <div className="flex flex-col gap-3 sm:flex-row">
+              <input
+                id="newsletter-email"
+                type="email"
+                autoComplete="email"
+                placeholder="nombre@ejemplo.com"
+                className="min-h-12 min-w-0 flex-1 rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-900 placeholder:text-gray-500 transition-colors hover:border-gray-300 focus:border-[#f26522]/70 focus:outline-none focus:ring-2 focus:ring-[#f26522]/30"
+              />
+              <button type="button" className="inline-flex min-h-12 items-center justify-center gap-3 rounded-xl border border-[#f26522] bg-[#f26522] px-5 py-3 text-sm font-medium text-white transition-colors hover:bg-[#d95316] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#f26522]">
+                Suscribirme <ArrowRight className="h-4 w-4" strokeWidth={1.5} />
+              </button>
+            </div>
           </div>
         </motion.section>
 

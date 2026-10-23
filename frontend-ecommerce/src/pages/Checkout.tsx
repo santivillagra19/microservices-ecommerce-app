@@ -123,8 +123,8 @@ export const Checkout = () => {
               <div className="mt-4 bg-orange-50 p-4 border border-orange-200 rounded text-sm text-gray-800 space-y-3">
                 <p className="font-bold border-b border-orange-200 pb-2">Datos para la transferencia:</p>
                 <div className="grid grid-cols-3 gap-2">
-                  <span className="font-semibold">CBU:</span><span className="col-span-2 font-mono">0000000000000000000000</span>
-                  <span className="font-semibold">Alias:</span><span className="col-span-2 font-mono">FERRETERIA.TOOLS.OK</span>
+                  <span className="font-semibold">CBU:</span><span className="col-span-2 font-sans tabular-nums">0000000000000000000000</span>
+                  <span className="font-semibold">Alias:</span><span className="col-span-2 font-sans tabular-nums">FERRETERIA.TOOLS.OK</span>
                   <span className="font-semibold">Titular:</span><span className="col-span-2">Herramientas SA (Cuenta Ficticia)</span>
                 </div>
                 <div className="mt-4 p-3 bg-green-100 border border-green-300 rounded text-center">
