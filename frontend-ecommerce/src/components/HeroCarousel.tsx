@@ -22,7 +22,7 @@ export const HeroCarousel = ({ banners }: { banners: Banner[] }) => {
 
   useEffect(() => {
     if (reducedMotion || focused || banners.length < 2) return;
-    const timer = window.setTimeout(() => setSelected((selected + 1) % banners.length), 6500);
+    const timer = window.setTimeout(() => setSelected((selected + 1) % banners.length), 5000);
     return () => window.clearTimeout(timer);
   }, [selected, banners.length, focused, reducedMotion]);
 
@@ -52,26 +52,12 @@ export const HeroCarousel = ({ banners }: { banners: Banner[] }) => {
                 <span aria-hidden="true" className="absolute bottom-5 left-5 h-9 w-9 border-b-2 border-l-2 border-[#f26522]" />
                 <div className="absolute bottom-6 left-10 right-6 flex items-end justify-between gap-4 text-white">
                   <span className="text-xs font-medium uppercase tracking-[0.15em]">Del taller a la obra</span>
-                  <span aria-hidden="true" className="text-5xl font-semibold tracking-tight text-white/60">{String(index + 1).padStart(2, '0')}</span>
                 </div>
               </div>
             </div>
           ))}
         </div>
       </div>
-      {banners.length > 1 && (
-        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-white/10 bg-[#202022] px-4 py-3 sm:px-6">
-          <div role="group" aria-label="Elegir destacado" className="flex min-w-0 flex-1 items-center gap-1 sm:gap-2">
-            {banners.map((banner, index) => (
-              <button key={banner.id} type="button" onClick={() => setSelected(index)} aria-label={`Ver ${sentenceCase(banner.title)}`} aria-current={selected === index ? 'true' : undefined} className={`flex min-h-11 min-w-11 items-center gap-2 rounded-lg border px-3 py-2 text-sm transition-colors focus-visible:outline-2 focus-visible:outline-[#f26522] ${selected === index ? 'border-[#f26522]/40 bg-[#f26522]/10 text-orange-300' : 'border-transparent text-gray-400 hover:bg-white/5 hover:text-white'}`}>
-                <span className="font-semibold tabular-nums">{String(index + 1).padStart(2, '0')}</span>
-                <span className="hidden max-w-36 truncate text-xs font-medium xl:block">{sentenceCase(banner.title)}</span>
-              </button>
-            ))}
-          </div>
-
-        </div>
-      )}
     </section>
   );
 };
