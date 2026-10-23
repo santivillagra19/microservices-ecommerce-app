@@ -1,4 +1,0 @@
-interface:
-  display_name: "Ponytail"
-  short_description: "Cambios simples y completos para este proyecto"
-  default_prompt: "Usa $ponytail para resolver esta tarea con el menor cambio completo y respetando las convenciones del proyecto."
