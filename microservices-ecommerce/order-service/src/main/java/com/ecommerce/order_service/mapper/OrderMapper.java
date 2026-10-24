@@ -19,6 +19,7 @@ public interface OrderMapper {
     OrderLineItems toOrderLineItems(OrderLineItemsRequestDTO orderLineItemsRequestDTO);
 
     // Entity to Response
+    @Mapping(target = "trackingToken", ignore = true)
     OrderResponseDTO toOrderResponse(Order order);
 
     // Entity to Response

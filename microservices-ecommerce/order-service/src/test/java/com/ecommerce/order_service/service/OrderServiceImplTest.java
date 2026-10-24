@@ -9,6 +9,9 @@ import com.ecommerce.order_service.model.OrderStatus;
 import com.ecommerce.order_service.repository.OrderRepository;
 import com.ecommerce.order_service.service.impl.OrderServiceImpl;
 import com.mercadopago.resources.preference.Preference;
+import com.mercadopago.resources.payment.Payment;
+import com.mercadopago.exceptions.MPException;
+import com.ecommerce.order_service.exception.ResourceNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -49,6 +52,9 @@ class OrderServiceImplTest {
     @Mock
     private MercadoPagoService mercadoPagoService;
 
+    @Mock
+    private PaymentConfirmationService paymentConfirmationService;
+
     @InjectMocks
     private OrderServiceImpl orderService;
 
@@ -87,6 +93,8 @@ class OrderServiceImplTest {
 
         assertNotNull(result);
         assertEquals("ORD-123", result.getOrderNumber());
+        assertNotNull(result.getTrackingToken());
+        assertDoesNotThrow(() -> java.util.UUID.fromString(result.getTrackingToken()));
         verify(orderRepository, times(1)).save(order);
         verify(rabbitTemplate, times(1)).convertAndSend(eq("order-events"), eq("order.placed"),
                 any(com.ecommerce.order_service.event.OrderPlacedEvent.class));
@@ -96,7 +104,7 @@ class OrderServiceImplTest {
     @Test
     void placeOrder_WhenMercadoPagoFails_ShouldRejectWithoutPublishingOrder() throws Exception {
         prepareMercadoPagoOrder();
-        when(mercadoPagoService.createPreference(any())).thenThrow(new RuntimeException("API unavailable"));
+        when(mercadoPagoService.createPreference(any())).thenThrow(new MPException("API unavailable"));
 
         assertPaymentUnavailable();
     }
@@ -150,6 +158,73 @@ class OrderServiceImplTest {
         assertEquals(HttpStatus.SERVICE_UNAVAILABLE, error.getStatusCode());
         assertNull(orderResponseDTO.getPaymentUrl());
         verifyNoInteractions(rabbitTemplate, outboxService);
+    }
+
+    @Test
+    void trackingWithWrongToken_ShouldNotReadPaymentProvider() {
+        assertThrows(ResourceNotFoundException.class, () -> orderService.getTrackedOrder(1L, "wrong-token"));
+        verifyNoInteractions(mercadoPagoService, paymentConfirmationService);
+    }
+
+    @Test
+    void trackingPendingPayment_ShouldNotConfirmOrder() throws Exception {
+        prepareTrackedOrder();
+        when(mercadoPagoService.findApprovedPayment("ORD-123")).thenReturn(Optional.empty());
+
+        assertEquals(OrderStatus.PLACED, orderService.getTrackedOrder(1L, "tracking-token").getOrderStatus());
+        verifyNoInteractions(paymentConfirmationService);
+    }
+
+    @Test
+    void trackingApprovedPayment_ShouldUseVerifiedPaymentProcessor() throws Exception {
+        prepareTrackedOrder();
+        Payment payment = mock(Payment.class);
+        when(mercadoPagoService.findApprovedPayment("ORD-123")).thenReturn(Optional.of(payment));
+        doAnswer(invocation -> { order.setOrderStatus(OrderStatus.CONFIRMED); return null; })
+                .when(paymentConfirmationService).process(payment);
+
+        assertEquals(OrderStatus.CONFIRMED, orderService.getTrackedOrder(1L, "tracking-token").getOrderStatus());
+        verify(paymentConfirmationService).process(payment);
+    }
+
+    @Test
+    void trackingWhenProviderFails_ShouldReturn503AndRemainPending() throws Exception {
+        order.setPaymentMethod("MERCADOPAGO");
+        when(orderRepository.findByIdAndTrackingToken(1L, "tracking-token")).thenReturn(Optional.of(order));
+        when(mercadoPagoService.findApprovedPayment("ORD-123")).thenThrow(new MPException("unavailable"));
+
+        ResponseStatusException error = assertThrows(ResponseStatusException.class,
+                () -> orderService.getTrackedOrder(1L, "tracking-token"));
+
+        assertEquals(HttpStatus.SERVICE_UNAVAILABLE, error.getStatusCode());
+        assertEquals(OrderStatus.PLACED, order.getOrderStatus());
+        verifyNoInteractions(paymentConfirmationService);
+    }
+
+    @Test
+    void trackingConfirmedOrder_ShouldNotCheckOrProcessPaymentAgain() {
+        prepareTrackedOrder();
+        order.setOrderStatus(OrderStatus.CONFIRMED);
+
+        assertEquals(OrderStatus.CONFIRMED, orderService.getTrackedOrder(1L, "tracking-token").getOrderStatus());
+        verifyNoInteractions(mercadoPagoService, paymentConfirmationService);
+    }
+
+    private void prepareTrackedOrder() {
+        order.setPaymentMethod("MERCADOPAGO");
+        when(orderRepository.findByIdAndTrackingToken(1L, "tracking-token")).thenReturn(Optional.of(order));
+        when(orderMapper.toOrderResponse(order)).thenAnswer(invocation -> OrderResponseDTO.builder()
+                .id(order.getId()).orderStatus(order.getOrderStatus()).build());
+    }
+
+    @Test
+    void trackingBankTransfer_ShouldRemainPendingWithoutContactingMercadoPago() {
+        prepareTrackedOrder();
+        order.setPaymentMethod("TRANSFERENCIA");
+
+        assertEquals(OrderStatus.PLACED, orderService.getTrackedOrder(1L, "tracking-token").getOrderStatus());
+        assertEquals(OrderStatus.PLACED, order.getOrderStatus());
+        verifyNoInteractions(mercadoPagoService, paymentConfirmationService, rabbitTemplate);
     }
 
     @Test

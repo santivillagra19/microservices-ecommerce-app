@@ -20,6 +20,11 @@ public class Order {
 
     private String userId;
 
+    @Column(unique = true, length = 36)
+    private String trackingToken;
+
+    private String paymentMethod;
+
     private String email;
     private String nombre;
     private String telefono;

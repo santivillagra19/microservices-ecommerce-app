@@ -12,6 +12,7 @@ public interface OrderService {
     OrderResponseDTO placeOrder(OrderRequestDTO orderRequestDTO, String userId) throws JsonProcessingException;
     List<OrderResponseDTO> getOrders(String userId, boolean isAdmin);
     OrderResponseDTO getOrderById(Long id);
+    OrderResponseDTO getTrackedOrder(Long id, String trackingToken);
     void deleteOrder(Long id);
     void updateOrderStatus(String orderNumber, OrderStatus status);
 

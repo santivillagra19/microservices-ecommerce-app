@@ -18,6 +18,7 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                     .requestMatchers("/actuator/**").permitAll()
                     .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/v1/order").permitAll()
+                    .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/v1/order/*/tracking").permitAll()
                     .requestMatchers("/api/v1/webhook/**").permitAll()
                     .anyRequest().authenticated()
             )

@@ -21,4 +21,5 @@ public class OrderResponseDTO {
     private String direccionEntrega;
     private List<OrderLineItemsResponseDTO> orderLineItemsList;
     private String paymentUrl;
+    private String trackingToken;
 }

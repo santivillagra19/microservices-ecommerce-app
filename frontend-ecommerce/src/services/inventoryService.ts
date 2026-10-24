@@ -1,6 +1,10 @@
 import { api } from './api';
 import type { Inventory } from '../types';
 
+const toInventoryRequest = (inventory: Partial<Inventory>) => ({
+  sku: inventory.sku || '',
+  quantity: inventory.quantity ?? 0,
+});
 
 
 export const inventoryService = {
@@ -15,11 +19,11 @@ export const inventoryService = {
     return item ? item.quantity > 0 : false;
   },
   add: async (inventory: Omit<Inventory, 'id'>): Promise<Inventory> => {
-    const response = await api.post('/inventory', inventory);
+    const response = await api.post('/inventory', toInventoryRequest(inventory));
     return response.data;
   },
   update: async (id: string, inventory: Partial<Inventory>): Promise<Inventory> => {
-    const response = await api.put(`/inventory/${id}`, inventory);
+    const response = await api.put(`/inventory/${id}`, toInventoryRequest(inventory));
     return response.data;
   },
   reduceStock: async (sku: string, quantity: number): Promise<void> => {

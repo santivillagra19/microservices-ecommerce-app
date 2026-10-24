@@ -4,6 +4,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingRequestHeaderException;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
@@ -42,6 +44,11 @@ public class GlobalControllerAdvice {
                 errorMap.put(error.getField(), error.getDefaultMessage()));
         problemDetail.setProperty("errors", errorMap);
         return problemDetail;
+    }
+
+    @ExceptionHandler({MissingRequestHeaderException.class, MethodArgumentTypeMismatchException.class})
+    public ProblemDetail handleInvalidRequestParameter() {
+        return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, "Parametros de solicitud invalidos");
     }
 
     @ExceptionHandler(ResponseStatusException.class)

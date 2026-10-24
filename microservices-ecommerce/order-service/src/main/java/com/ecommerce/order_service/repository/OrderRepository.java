@@ -13,6 +13,8 @@ import java.util.Optional;
 public interface OrderRepository extends JpaRepository<Order, Long> {
     List<Order> findByUserId(String userId);
     Optional<Order> findByOrderNumber(String orderNumber);
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    Optional<Order> findByIdAndTrackingToken(Long id, String trackingToken);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select o from Order o where o.orderNumber = :orderNumber")

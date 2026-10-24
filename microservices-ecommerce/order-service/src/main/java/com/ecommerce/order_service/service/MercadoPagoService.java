@@ -9,10 +9,30 @@ import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.retry.annotation.Retry;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Value;
+import com.mercadopago.client.payment.PaymentClient;
+import com.mercadopago.core.MPRequestOptions;
+import com.mercadopago.net.MPSearchRequest;
+import com.mercadopago.resources.payment.Payment;
+import java.util.Map;
+import java.util.Optional;
 
 @Service
 @Slf4j
 public class MercadoPagoService {
+
+    @Value("${mercadopago.access-token:}")
+    private String accessToken;
+
+    public Optional<Payment> findApprovedPayment(String orderNumber) throws MPException, MPApiException {
+        MPSearchRequest request = MPSearchRequest.builder().limit(1).offset(0)
+                .filters(Map.of("external_reference", orderNumber, "status", "approved",
+                        "sort", "date_created", "criteria", "desc")).build();
+        return new PaymentClient().search(request, MPRequestOptions.builder().accessToken(accessToken).build())
+                .getResults().stream()
+                .filter(payment -> orderNumber.equals(payment.getExternalReference()) && "approved".equals(payment.getStatus()))
+                .findFirst();
+    }
 
     @CircuitBreaker(name = "mercadopago", fallbackMethod = "fallbackCreatePreference")
     @Retry(name = "mercadopago")

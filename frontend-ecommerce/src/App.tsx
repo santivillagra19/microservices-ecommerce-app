@@ -50,12 +50,14 @@ function App() {
           <Route path="products/:id" element={<ProductDetail />} />
           <Route path="cart" element={<Cart />} />
           <Route path="checkout" element={<Checkout />} />
+          <Route path="checkout/status" element={<Orders checkoutOnly />} />
           <Route path="checkout/success" element={<CheckoutSuccess />} />
           <Route path="checkout/failure" element={<CheckoutSuccess />} />
           <Route path="checkout/pending" element={<CheckoutSuccess />} />
           <Route path="inventory" element={<InventoryPage />} />
           <Route path="contact" element={<Contact />} />
           <Route path="empresas" element={<Empresas />} />
+          <Route path="order" element={<Orders />} />
           <Route path="orders" element={<Orders />} />
           <Route path="admin" element={<AdminDashboard />} />
         </Route>

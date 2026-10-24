@@ -1,15 +1,17 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { productService } from '../../services/productService';
 import { api } from '../../services/api';
 import type { Product } from '../../types';
 import { Button } from '../../components/ui/Button';
 import { Edit2, Trash2, Plus, X, Upload, ChevronLeft, ChevronRight } from 'lucide-react';
+import { toast } from 'sonner';
 
 export const ProductManager = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [isEditing, setIsEditing] = useState(false);
   const [currentProduct, setCurrentProduct] = useState<Partial<Product>>({});
   const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
 
   const fetchProducts = async () => {
     setLoading(true);
@@ -28,6 +30,7 @@ export const ProductManager = () => {
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
+    setSaving(true);
     try {
       if (currentProduct.id) {
         await productService.update(currentProduct.id, currentProduct);
@@ -36,8 +39,12 @@ export const ProductManager = () => {
       }
       setIsEditing(false);
       setCurrentProduct({});
+      toast.success(currentProduct.id ? 'Producto actualizado' : 'Producto creado');
       fetchProducts();
-    } catch (error) {
+    } catch {
+      toast.error('No se pudo guardar el producto. Verificá los datos y tus permisos de administrador.');
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -91,7 +98,7 @@ export const ProductManager = () => {
             <input
               type="number"
               required
-              min="0"
+              min="0.01"
               step="0.01"
               className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm"
               value={currentProduct.price || 0}
@@ -235,7 +242,7 @@ export const ProductManager = () => {
               </div>
             )}
           </div>
-          <Button type="submit">Guardar Producto</Button>
+          <Button type="submit" disabled={saving}>{saving ? 'Guardando...' : 'Guardar Producto'}</Button>
         </form>
       </div>
     );

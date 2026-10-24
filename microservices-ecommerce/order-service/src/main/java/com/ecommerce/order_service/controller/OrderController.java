@@ -6,6 +6,8 @@ import com.ecommerce.order_service.service.OrderService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.CacheControl;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
@@ -15,6 +17,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Collection;
+import org.springframework.web.server.ResponseStatusException;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 @RestController
@@ -37,20 +42,29 @@ public class OrderController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "Get orders", description = "Retrieves all orders for the current user (or all if admin)")
+    @Operation(summary = "Get orders", description = "Retrieves only the current user's orders")
     public List<OrderResponseDTO> getOrders(@AuthenticationPrincipal Jwt jwt) {
-        String userId = jwt.getSubject();
-        boolean isAdmin = false;
+        if (jwt == null) throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+        return orderService.getOrders(jwt.getSubject(), false);
+    }
 
-        Map<String, Object> realmAccess = jwt.getClaim("realm_access");
-
-        if(realmAccess != null && realmAccess.containsKey("roles")){
-            List<String> roles = (List<String>) realmAccess.get("roles");
-
-            isAdmin = roles.stream().anyMatch(role -> role.equalsIgnoreCase("ADMIN"));
+    @GetMapping("/admin")
+    @Operation(summary = "Get all orders", description = "Admin only, includes guest orders")
+    public List<OrderResponseDTO> getAdminOrders(@AuthenticationPrincipal Jwt jwt) {
+        if (jwt == null) throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+        Map<String, Object> realmAccess = jwt.getClaimAsMap("realm_access");
+        if (realmAccess == null || !(realmAccess.get("roles") instanceof Collection<?> roles)
+                || !roles.contains("ADMIN")) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN);
         }
+        return orderService.getOrders(jwt.getSubject(), true);
+    }
 
-        return orderService.getOrders(userId, isAdmin);
+    @GetMapping("/{id}/tracking")
+    public ResponseEntity<OrderResponseDTO> getTrackedOrder(@PathVariable Long id,
+            @RequestHeader("X-Order-Token") UUID trackingToken) {
+        return ResponseEntity.ok().cacheControl(CacheControl.noStore())
+                .body(orderService.getTrackedOrder(id, trackingToken.toString()));
     }
 
     @GetMapping("/{id}")

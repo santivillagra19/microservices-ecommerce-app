@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: order-service
-          image: order-service:mp-failure-20261023-v2
+          image: order-service:mp-tracking-offset-20261024
           imagePullPolicy: Never
           ports:
             - containerPort: 8082

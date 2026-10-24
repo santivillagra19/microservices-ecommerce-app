@@ -40,6 +40,7 @@ public class SecurityConfig {
         configuration.setAllowedOriginPatterns(allowedOrigins);
         configuration.setAllowedMethods(allowedMethods);
         configuration.setAllowedHeaders(allowedHeaders);
+        configuration.addAllowedHeader("X-Order-Token");
         configuration.setAllowCredentials(true);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
@@ -68,6 +69,8 @@ public class SecurityConfig {
                         .pathMatchers("/api/v1/inventory/**", "/api/v1/inventory").hasRole(Role.ADMIN.name())
 
                         .pathMatchers(HttpMethod.POST, "/api/v1/order/**", "/api/v1/order").permitAll()
+                        .pathMatchers(HttpMethod.GET, "/api/v1/order/*/tracking").permitAll()
+                        .pathMatchers(HttpMethod.GET, "/api/v1/order/admin").hasRole(Role.ADMIN.name())
                         .pathMatchers(HttpMethod.GET, "/api/v1/order/**", "/api/v1/order").hasAnyRole(Role.ADMIN.name(), Role.USER.name())
                         .pathMatchers(HttpMethod.PUT, "/api/v1/order/**", "/api/v1/order").hasRole(Role.ADMIN.name())
                         .pathMatchers(HttpMethod.DELETE, "/api/v1/order/**", "/api/v1/order").hasRole(Role.ADMIN.name())

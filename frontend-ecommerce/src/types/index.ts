@@ -19,6 +19,7 @@ export interface Order {
   direccionEntrega?: string;
   orderLineItemsList: OrderLineItem[];
   paymentUrl?: string;
+  trackingToken?: string;
 }
 
 export interface OrderLineItem {

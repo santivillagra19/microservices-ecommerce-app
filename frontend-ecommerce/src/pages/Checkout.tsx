@@ -1,6 +1,7 @@
-﻿import { useState } from 'react';
+import { useState } from 'react';
 import { Link, Navigate, useNavigate } from 'react-router-dom';
 import { useCartStore } from '../store/cartStore';
+import { useCheckoutStore } from '../store/checkoutStore';
 import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
 import { authService } from '../services/authService';
@@ -26,6 +27,18 @@ export const Checkout = () => {
 
   const handleCheckout = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (loading) return;
+    let paymentTab: Window | null = null;
+    if (paymentMethod === 'MERCADOPAGO') {
+      // Abrir durante el clic evita el bloqueo de ventanas después de esperar la API.
+      paymentTab = window.open('about:blank', '_blank');
+      if (!paymentTab) {
+        toast.error('Permití las ventanas emergentes para abrir Mercado Pago en otra pestaña.');
+        return;
+      }
+      paymentTab.opener = null;
+    }
+    const isGuestOrder = !authService.isAuthenticated();
     setLoading(true);
     try {
       const orderLineItemsList = items.map(item => ({
@@ -34,12 +47,22 @@ export const Checkout = () => {
         quantity: item.quantity,
       }));
       const response = await orderService.create({ email, nombre, telefono, direccionEntrega, paymentMethod, orderLineItemsList });
-      if (paymentMethod === 'MERCADOPAGO' && response.paymentUrl) {
-        window.location.href = response.paymentUrl;
+      if (paymentMethod === 'MERCADOPAGO') {
+        const paymentUrl = new URL(response.paymentUrl || '');
+        if (paymentUrl.origin !== 'https://www.mercadopago.com.ar' || !response.trackingToken) {
+          paymentTab?.close();
+          toast.error('No pudimos iniciar el seguimiento del pago. Intente nuevamente.');
+          return;
+        }
+        useCheckoutStore.getState().setOrder(response, isGuestOrder);
+        if (paymentTab && !paymentTab.closed) paymentTab.location.replace(paymentUrl.href);
+        navigate(isGuestOrder ? '/checkout/status' : '/order');
       } else {
+        useCheckoutStore.getState().setOrder(response, isGuestOrder);
         navigate(`/checkout/success?orderNumber=${response.orderNumber}&method=TRANSFERENCIA`);
       }
     } catch {
+      paymentTab?.close();
       toast.error('Ocurrió un error al procesar el pago. Intente nuevamente.');
     } finally {
       setLoading(false);
@@ -83,7 +106,7 @@ export const Checkout = () => {
                 <label className={`flex cursor-pointer items-center gap-3 rounded-xl border-2 p-4 transition-colors focus-within:outline-2 focus-within:outline-offset-3 focus-within:outline-[#f26522] sm:gap-4 sm:p-5 ${paymentMethod === 'MERCADOPAGO' ? 'border-[#f26522] bg-orange-50' : 'border-gray-200 bg-gray-50 hover:border-gray-400'}`}>
                   <input type="radio" name="paymentMethod" value="MERCADOPAGO" checked={paymentMethod === 'MERCADOPAGO'} onChange={() => setPaymentMethod('MERCADOPAGO')} className="h-5 w-5 shrink-0 accent-[#f26522]" />
                   <CreditCard aria-hidden="true" className={`h-6 w-6 shrink-0 ${paymentMethod === 'MERCADOPAGO' ? 'text-[#c34b15]' : 'text-gray-500'}`} />
-                  <span className="min-w-0"><span className="block text-base font-semibold text-gray-900">Tarjeta de crédito o débito</span><span className="mt-1 block text-sm leading-relaxed text-gray-600">Continuás a Mercado Pago para realizar el pago.</span></span>
+                  <span className="min-w-0"><span className="block text-base font-semibold text-gray-900">Tarjeta de crédito o débito</span><span className="mt-1 block text-sm leading-relaxed text-gray-600">Mercado Pago se abre en otra pestaña. Acá podés seguir el estado de tu pedido.</span></span>
                 </label>
                 <label className={`flex cursor-pointer items-center gap-3 rounded-xl border-2 p-4 transition-colors focus-within:outline-2 focus-within:outline-offset-3 focus-within:outline-[#f26522] sm:gap-4 sm:p-5 ${paymentMethod === 'TRANSFERENCIA' ? 'border-[#f26522] bg-orange-50' : 'border-gray-200 bg-gray-50 hover:border-gray-400'}`}>
                   <input type="radio" name="paymentMethod" value="TRANSFERENCIA" checked={paymentMethod === 'TRANSFERENCIA'} onChange={() => setPaymentMethod('TRANSFERENCIA')} className="h-5 w-5 shrink-0 accent-[#f26522]" />

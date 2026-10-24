@@ -1,6 +1,16 @@
 import { api } from './api';
 import type { Product } from '../types';
 
+type ProductWriteRequest = Omit<Product, 'id' | 'imageUrl'> & { imageUrls?: string[] };
+
+const toProductRequest = (product: Partial<Product>): ProductWriteRequest => ({
+  name: product.name || '',
+  description: product.description || '',
+  price: product.price ?? 0,
+  category: product.category || '',
+  brand: product.brand || '',
+  imageUrls: product.imageUrls || (product.imageUrl ? [product.imageUrl] : []),
+});
 
 
 export const productService = {
@@ -13,11 +23,11 @@ export const productService = {
     return response.data;
   },
   create: async (product: Omit<Product, 'id'>): Promise<Product> => {
-    const response = await api.post('/product', product);
+    const response = await api.post('/product', toProductRequest(product));
     return response.data;
   },
   update: async (id: string, product: Partial<Product>): Promise<Product> => {
-    const response = await api.put(`/product/${id}`, product);
+    const response = await api.put(`/product/${id}`, toProductRequest(product));
     return response.data;
   },
   delete: async (id: string): Promise<void> => {

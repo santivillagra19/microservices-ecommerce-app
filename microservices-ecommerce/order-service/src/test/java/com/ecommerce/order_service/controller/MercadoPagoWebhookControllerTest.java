@@ -6,8 +6,10 @@ import com.ecommerce.order_service.model.Order;
 import com.ecommerce.order_service.model.OrderLineItems;
 import com.ecommerce.order_service.model.OrderStatus;
 import com.ecommerce.order_service.repository.OrderRepository;
+import com.ecommerce.order_service.service.PaymentConfirmationService;
 import com.mercadopago.client.payment.PaymentClient;
 import com.mercadopago.resources.payment.Payment;
+import com.mercadopago.exceptions.MPException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -49,7 +51,7 @@ class MercadoPagoWebhookControllerTest {
     void setUp() {
         repository = mock(OrderRepository.class);
         rabbit = mock(RabbitTemplate.class);
-        controller = new MercadoPagoWebhookController(repository, rabbit);
+        controller = new MercadoPagoWebhookController(new PaymentConfirmationService(repository, rabbit));
         ReflectionTestUtils.setField(controller, "mpAccessToken", "TEST-token");
         ReflectionTestUtils.setField(controller, "webhookSecret", SECRET);
         mvc = MockMvcBuilders.standaloneSetup(controller)
@@ -139,7 +141,7 @@ class MercadoPagoWebhookControllerTest {
     @Test
     void providerUnavailable_ShouldReturnRetryableError() throws Exception {
         try (MockedConstruction<PaymentClient> ignored = mockConstruction(PaymentClient.class,
-                (client, context) -> when(client.get(123L)).thenThrow(new RuntimeException("unavailable")))) {
+                (client, context) -> when(client.get(123L)).thenThrow(new MPException("unavailable")))) {
             mvc.perform(signedRequest("123")).andExpect(status().isServiceUnavailable());
         }
         verifyNoInteractions(repository, rabbit);

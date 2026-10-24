@@ -1,6 +1,7 @@
-﻿import { useEffect } from 'react';
+import { useEffect } from 'react';
 import { useSearchParams, Link, useLocation } from 'react-router-dom';
 import { ArrowLeft, ArrowRight, Clock, CreditCard, Info, Landmark, MessageCircle, Package, XCircle } from 'lucide-react';
+import { authService } from '../services/authService';
 import { useCartStore } from '../store/cartStore';
 
 export const CheckoutSuccess = () => {
@@ -28,8 +29,8 @@ export const CheckoutSuccess = () => {
   } : transfer ? {
     Icon: Landmark,
     label: 'Pendiente de pago',
-    title: 'Tu pedido quedó registrado',
-    description: 'El siguiente paso es coordinar el pago por transferencia o efectivo. Conservá el número de pedido para cualquier consulta.',
+    title: 'Pedido pendiente de pago',
+    description: 'Tu pedido quedó registrado y permanece pendiente hasta que confirmemos la acreditación de la transferencia o el pago en efectivo. Conservá el número de pedido para cualquier consulta.',
     next: 'Si elegiste transferencia, el pedido queda pendiente hasta que se verifique la acreditación. Para pagar en efectivo, contactanos y coordinamos.',
     color: 'border-orange-200 bg-orange-50 text-[#c34b15]',
   } : {
@@ -86,7 +87,7 @@ export const CheckoutSuccess = () => {
               <p className="mt-2 text-sm leading-relaxed text-gray-600">Si tenés dudas sobre el pago o la entrega, escribinos con tu número de pedido.</p>
               <Link to="/contact" className="mt-4 inline-flex min-h-11 items-center gap-2 text-sm font-semibold text-[#c34b15] hover:text-[#9a3b11]">Contactar a la tienda<ArrowRight className="h-4 w-4" /></Link>
             </div>
-            <Link to={failed ? '/checkout' : '/products'} className="mt-5 flex min-h-13 items-center justify-between gap-3 rounded-xl bg-[#f26522] px-5 py-3.5 text-base font-semibold text-white transition-colors hover:bg-[#df581b]">{failed ? 'Intentar nuevamente' : 'Seguir comprando'}<ArrowRight className="h-5 w-5 shrink-0" /></Link>
+            <Link to={failed ? '/checkout' : transfer && authService.isAuthenticated() ? '/order' : '/products'} className="mt-5 flex min-h-13 items-center justify-between gap-3 rounded-xl bg-[#f26522] px-5 py-3.5 text-base font-semibold text-white transition-colors hover:bg-[#df581b]">{failed ? 'Intentar nuevamente' : transfer && authService.isAuthenticated() ? 'Ver mis órdenes' : 'Seguir comprando'}<ArrowRight className="h-5 w-5 shrink-0" /></Link>
             {failed && <Link to="/cart" className="mt-2 flex min-h-11 items-center justify-center rounded-xl border border-gray-300 bg-white px-4 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50">Revisar mi carrito</Link>}
           </aside>
         </div>

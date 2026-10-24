@@ -4,6 +4,7 @@ import { productService } from '../../services/productService';
 import type { Inventory, Product } from '../../types';
 import { Button } from '../../components/ui/Button';
 import { Edit2, Trash2, Plus, X } from 'lucide-react';
+import { toast } from 'sonner';
 
 export const InventoryManager = () => {
   const [inventoryList, setInventoryList] = useState<Inventory[]>([]);
@@ -11,6 +12,7 @@ export const InventoryManager = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [currentItem, setCurrentItem] = useState<Partial<Inventory>>({});
   const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
 
   const fetchInventory = async () => {
     setLoading(true);
@@ -37,6 +39,7 @@ export const InventoryManager = () => {
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
+    setSaving(true);
     try {
       if (currentItem.id) {
         await inventoryService.update(currentItem.id, currentItem);
@@ -45,8 +48,12 @@ export const InventoryManager = () => {
       }
       setIsEditing(false);
       setCurrentItem({});
+      toast.success(currentItem.id ? 'Stock actualizado' : 'Registro de stock creado');
       fetchInventory();
-    } catch (error) {
+    } catch {
+      toast.error('No se pudo guardar el stock. Verificá el SKU y tus permisos de administrador.');
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -68,7 +75,7 @@ export const InventoryManager = () => {
     return (
       <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
         <div className="flex justify-between items-center mb-6">
-          <h3 className="text-xl font-bold">{currentItem.id ? 'Editar Inventario' : 'Nuevo Registro'}</h3>
+          <h3 className="text-xl font-bold">{currentItem.id ? 'Editar stock y SKU' : 'Nuevo registro de stock'}</h3>
           <Button variant="secondary" onClick={() => setIsEditing(false)} icon={X}>Cancelar</Button>
         </div>
         <form onSubmit={handleSave} className="space-y-4">
@@ -83,7 +90,7 @@ export const InventoryManager = () => {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700">Cantidad</label>
+            <label className="block text-sm font-medium text-gray-700">Stock disponible</label>
             <input
               type="number"
               required
@@ -93,7 +100,7 @@ export const InventoryManager = () => {
               onChange={(e) => setCurrentItem({ ...currentItem, quantity: parseInt(e.target.value, 10) })}
             />
           </div>
-          <Button type="submit">Guardar Inventario</Button>
+          <Button type="submit" disabled={saving}>{saving ? 'Guardando...' : 'Guardar stock'}</Button>
         </form>
       </div>
     );
@@ -102,7 +109,7 @@ export const InventoryManager = () => {
   return (
     <div>
       <div className="flex justify-between items-center mb-4">
-        <h3 className="text-lg font-semibold">Gestión de Inventario</h3>
+        <div><h3 className="text-lg font-semibold">Stock y SKU</h3><p className="mt-1 text-sm text-gray-500">El nombre, precio e imágenes se administran desde Productos.</p></div>
         <Button onClick={() => openEditor()} icon={Plus}>Añadir Registro</Button>
       </div>
       

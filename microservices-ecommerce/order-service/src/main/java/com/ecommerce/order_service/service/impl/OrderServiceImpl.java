@@ -4,6 +4,10 @@ import com.ecommerce.order_service.dto.OrderRequestDTO;
 import com.ecommerce.order_service.dto.OrderResponseDTO;
 import com.ecommerce.order_service.event.OrderPlacedEvent;
 import com.ecommerce.order_service.exception.ResourceNotFoundException;
+import com.ecommerce.order_service.exception.PaymentVerificationException;
+import com.mercadopago.exceptions.MPException;
+import com.mercadopago.exceptions.MPApiException;
+import org.springframework.dao.DataAccessException;
 import com.ecommerce.order_service.mapper.OrderMapper;
 import com.ecommerce.order_service.model.Order;
 import com.ecommerce.order_service.model.OrderLineItems;
@@ -17,6 +21,7 @@ import com.ecommerce.order_service.repository.OrderRepository;
 import com.ecommerce.order_service.service.OrderService;
 import com.ecommerce.order_service.service.OutboxService;
 import com.ecommerce.order_service.service.MercadoPagoService;
+import com.ecommerce.order_service.service.PaymentConfirmationService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -44,6 +49,7 @@ public class OrderServiceImpl implements OrderService {
     private final RabbitTemplate rabbitTemplate;
     private final OutboxService outboxService;
     private final MercadoPagoService mercadoPagoService;
+    private final PaymentConfirmationService paymentConfirmationService;
 
     @Value("${$order.enabled:true}")
     private boolean orderEnabled;
@@ -60,13 +66,15 @@ public class OrderServiceImpl implements OrderService {
 
             if(!orderEnabled) {
                 log.warn("Pedido rechazado: servicio deshabilitado por configuración.");
-                throw new RuntimeException("El servicio de pedidos está actualmente en mantenimiento, intente más tarde");
+                throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE,
+                        "El servicio de pedidos esta actualmente en mantenimiento, intente mas tarde");
             }
 
             log.info("Colocando nuevo pedido");
 
             Order order = orderMapper.toOrder(orderRequestDTO);
             order.setUserId(userId);
+            order.setTrackingToken(UUID.randomUUID().toString());
 
             order.setOrderNumber(UUID.randomUUID().toString());
             order.setOrderStatus(OrderStatus.PLACED);
@@ -75,6 +83,7 @@ public class OrderServiceImpl implements OrderService {
             log.info("Orden guardada con éxito. ID: {}", savedOrder.getId());
 
             OrderResponseDTO responseDTO = orderMapper.toOrderResponse(savedOrder);
+            responseDTO.setTrackingToken(savedOrder.getTrackingToken());
 
             if ("MERCADOPAGO".equalsIgnoreCase(orderRequestDTO.getPaymentMethod())) {
                 try {
@@ -119,10 +128,10 @@ public class OrderServiceImpl implements OrderService {
                     Preference preference = mercadoPagoService.createPreference(preferenceRequest);
                     
                     if (preference == null || preference.getInitPoint() == null || preference.getInitPoint().isBlank()) {
-                        throw new IllegalStateException("Mercado Pago no devolvio un enlace de pago");
+                        throw new PaymentVerificationException("Mercado Pago no devolvio un enlace de pago");
                     }
                     responseDTO.setPaymentUrl(preference.getInitPoint());
-                } catch (Exception e) {
+                } catch (MPException | MPApiException | PaymentVerificationException | IllegalArgumentException e) {
                     log.error("No se pudo crear el enlace de pago de Mercado Pago para la orden {}", savedOrder.getOrderNumber(), e);
                     throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE,
                             "No se pudo iniciar el pago con Mercado Pago. Intente nuevamente.", e);
@@ -155,6 +164,25 @@ public class OrderServiceImpl implements OrderService {
 
 
             return responseDTO;
+    }
+
+    @Override
+    @Transactional
+    public OrderResponseDTO getTrackedOrder(Long id, String trackingToken) {
+        Order order = orderRepository.findByIdAndTrackingToken(id, trackingToken)
+                .orElseThrow(() -> new ResourceNotFoundException("Orden", "id", id));
+        if (order.getOrderStatus() == OrderStatus.PLACED && "MERCADOPAGO".equalsIgnoreCase(order.getPaymentMethod())) {
+            try {
+                var payment = mercadoPagoService.findApprovedPayment(order.getOrderNumber());
+                if (payment.isPresent()) {
+                    paymentConfirmationService.process(payment.get());
+                }
+            } catch (MPException | MPApiException | PaymentVerificationException | AmqpException | DataAccessException | IllegalArgumentException e) {
+                throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE,
+                        "No se pudo verificar el pago. Intente nuevamente.", e);
+            }
+        }
+        return orderMapper.toOrderResponse(order);
     }
 
     @Override
